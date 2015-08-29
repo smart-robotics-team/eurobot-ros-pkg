@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notation:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmlns:ros="http://ros/1.0" xmi:id="_dbd8sE6OEeWF5IQyYYIHkw" type="RosPackage" name="eurobot2016_robotclaw_driver.ros_package_diagram" measurementUnit="Pixel">
+  <children xmi:type="notation:Shape" xmi:id="_eKlsgE6OEeWF5IQyYYIHkw" type="2001" fontName="Ubuntu">
+    <children xmi:type="notation:DecorationNode" xmi:id="_eKnhsE6OEeWF5IQyYYIHkw" type="5008"/>
+    <children xmi:type="notation:BasicCompartment" xmi:id="_eKov0E6OEeWF5IQyYYIHkw" type="7001">
+      <styles xmi:type="notation:TitleStyle" xmi:id="_eKov0U6OEeWF5IQyYYIHkw" showTitle="true"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_eKov0k6OEeWF5IQyYYIHkw"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_eKov006OEeWF5IQyYYIHkw"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_gg1LIE6OEeWF5IQyYYIHkw" type="3007">
+      <children xmi:type="notation:DecorationNode" xmi:id="_gg1LJE6OEeWF5IQyYYIHkw" type="5007"/>
+      <styles xmi:type="notation:DescriptionStyle" xmi:id="_gg1LIU6OEeWF5IQyYYIHkw"/>
+      <styles xmi:type="notation:FontStyle" xmi:id="_gg1LIk6OEeWF5IQyYYIHkw" fontName="Ubuntu"/>
+      <element xmi:type="ros:Subscriber" href="eurobot2016_robotclaw_driver.ros_package#//@node.0/@subscriber.0"/>
+      <layoutConstraint xmi:type="notation:Bounds" xmi:id="_gg1LI06OEeWF5IQyYYIHkw"/>
+    </children>
+    <element xmi:type="ros:Node" href="eurobot2016_robotclaw_driver.ros_package#//@node.0"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_eKlsgU6OEeWF5IQyYYIHkw" x="276" y="60" width="457" height="277"/>
+  </children>
+  <styles xmi:type="notation:DiagramStyle" xmi:id="_dbd8sU6OEeWF5IQyYYIHkw"/>
+  <element xmi:type="ros:Package" href="eurobot2016_robotclaw_driver.ros_package#/"/>
+</notation:Diagram>
