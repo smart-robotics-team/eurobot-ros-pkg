@@ -128,8 +128,8 @@ public:
         speed_motor1 = 0;
         speed_motor2 = 0;
 
-        lin_coeff = 1.0;
-        ang_coeff = 1.0;
+        lin_coeff = 10000.0;
+        ang_coeff = 10000.0;
         //write_RoboClaw_PID_M1(128, 150384, 80005, 60076, 44000); // 94000 // 120000
         //write_RoboClaw_PID_M2(128, 150384, 80005, 60076, 44000);
 
