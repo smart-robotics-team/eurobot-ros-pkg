@@ -5,7 +5,7 @@
 /* protected region user include files on begin */
 
 
-#define USE_BOOST
+//#define USE_BOOST
 
 #include <cstring>
 #include <iostream>
@@ -128,8 +128,8 @@ public:
         speed_motor1 = 0;
         speed_motor2 = 0;
 
-        lin_coeff = 10000.0;
-        ang_coeff = 10000.0;
+        lin_coeff = 20000.0;
+        ang_coeff = 2000.0;
         //write_RoboClaw_PID_M1(128, 150384, 80005, 60076, 44000); // 94000 // 120000
         //write_RoboClaw_PID_M2(128, 150384, 80005, 60076, 44000);
 
@@ -154,7 +154,7 @@ public:
     	speed_motor1 = msg->linear.x * lin_coeff - msg->angular.z * ang_coeff;
     	speed_motor2 = msg->linear.x * lin_coeff + msg->angular.z * ang_coeff;
 
-    	write_RoboClaw_speed_M1M2(128, -int32_t(speed_motor1), int32_t(speed_motor2));
+    	write_RoboClaw_speed_M1M2(128, int32_t(speed_motor1), int32_t(speed_motor2));
         /* protected region user implementation of subscribe callback for cmd_vel end */
     }
 
