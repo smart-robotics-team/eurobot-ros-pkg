@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ros:Package xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ros="http://ros/1.0" name="beacon_pt_filter" author="Joffrey Kriegel" author_email="kriegel.joffrey@gmail.com" description="The beacon_pt_filter package allow the user to make a PathThrough filter to the input LaserScan and transform it into a PointCloud" license="GPLv3">
+  <node name="beacon_pt_filter" frequency="50.0">
+    <publisher name="output" msg="sensor_msgs::PointCloud2"/>
+    <subscriber name="input" msg="sensor_msgs::LaserScan"/>
+    <parameter name="x_min" type="double" value="-1.5"/>
+    <parameter name="x_max" type="double" value="1.5"/>
+    <parameter name="y_min" type="double" value="0"/>
+    <parameter name="y_max" type="double" value="2.0"/>
+    <parameter name="world_frame_id" type="string" value="world"/>
+  </node>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>tf</depend>
+  <depend>pcl_ros</depend>
+  <depend>pcl_conversions</depend>
+  <depend>laser_geometry</depend>
+</ros:Package>
