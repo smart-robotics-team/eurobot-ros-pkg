@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notation:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmlns:ros="http://ros/1.0" xmi:id="_0SRtcF-GEeW-_a83-KI7Yg" type="RosPackage" name="beacon_pose_init.ros_package_diagram" measurementUnit="Pixel">
+  <children xmi:type="notation:Shape" xmi:id="_04CF4F-GEeW-_a83-KI7Yg" type="2001" fontName="Ubuntu">
+    <children xmi:type="notation:DecorationNode" xmi:id="_04D7EF-GEeW-_a83-KI7Yg" type="5008"/>
+    <children xmi:type="notation:BasicCompartment" xmi:id="_04D7EV-GEeW-_a83-KI7Yg" type="7001">
+      <children xmi:type="notation:Node" xmi:id="_Iv8rgF-HEeW-_a83-KI7Yg" type="3001">
+        <element xmi:type="ros:Parameter" href="beacon_pose_init.ros_package#//@node.0/@parameter.0"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_Iv8rgV-HEeW-_a83-KI7Yg"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_Lxo64F-HEeW-_a83-KI7Yg" type="3001">
+        <element xmi:type="ros:Parameter" href="beacon_pose_init.ros_package#//@node.0/@parameter.1"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_Lxo64V-HEeW-_a83-KI7Yg"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_PTFBUF-HEeW-_a83-KI7Yg" type="3001">
+        <element xmi:type="ros:Parameter" href="beacon_pose_init.ros_package#//@node.0/@parameter.2"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_PTFBUV-HEeW-_a83-KI7Yg"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_RTuDYF-HEeW-_a83-KI7Yg" type="3001">
+        <element xmi:type="ros:Parameter" href="beacon_pose_init.ros_package#//@node.0/@parameter.3"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_RTuDYV-HEeW-_a83-KI7Yg"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_rAfjkF-HEeW-_a83-KI7Yg" type="3001">
+        <element xmi:type="ros:Parameter" href="beacon_pose_init.ros_package#//@node.0/@parameter.4"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_rAfjkV-HEeW-_a83-KI7Yg"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_vgwpwF-HEeW-_a83-KI7Yg" type="3001">
+        <element xmi:type="ros:Parameter" href="beacon_pose_init.ros_package#//@node.0/@parameter.5"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_vgwpwV-HEeW-_a83-KI7Yg"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_7U1UwF-HEeW-_a83-KI7Yg" type="3001">
+        <element xmi:type="ros:Parameter" href="beacon_pose_init.ros_package#//@node.0/@parameter.6"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_7U170F-HEeW-_a83-KI7Yg"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="__WGKwF-HEeW-_a83-KI7Yg" type="3001">
+        <element xmi:type="ros:Parameter" href="beacon_pose_init.ros_package#//@node.0/@parameter.7"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="__WGx0F-HEeW-_a83-KI7Yg"/>
+      </children>
+      <styles xmi:type="notation:TitleStyle" xmi:id="_04D7El-GEeW-_a83-KI7Yg" showTitle="true"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_04D7E1-GEeW-_a83-KI7Yg"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_04D7FF-GEeW-_a83-KI7Yg"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_jPGD0F-HEeW-_a83-KI7Yg" type="3007">
+      <children xmi:type="notation:DecorationNode" xmi:id="_jPGq4F-HEeW-_a83-KI7Yg" type="5007"/>
+      <styles xmi:type="notation:DescriptionStyle" xmi:id="_jPGD0V-HEeW-_a83-KI7Yg"/>
+      <styles xmi:type="notation:FontStyle" xmi:id="_jPGD0l-HEeW-_a83-KI7Yg" fontName="Ubuntu"/>
+      <element xmi:type="ros:Subscriber" href="beacon_pose_init.ros_package#//@node.0/@subscriber.0"/>
+      <layoutConstraint xmi:type="notation:Bounds" xmi:id="_jPGD01-HEeW-_a83-KI7Yg"/>
+    </children>
+    <element xmi:type="ros:Node" href="beacon_pose_init.ros_package#//@node.0"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_04Cs8F-GEeW-_a83-KI7Yg" x="324" y="120" width="349" height="253"/>
+  </children>
+  <styles xmi:type="notation:DiagramStyle" xmi:id="_0SRtcV-GEeW-_a83-KI7Yg"/>
+  <element xmi:type="ros:Package" href="beacon_pose_init.ros_package#/"/>
+</notation:Diagram>

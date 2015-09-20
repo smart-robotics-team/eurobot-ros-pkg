@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notation:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmlns:ros="http://ros/1.0" xmi:id="_9F6aYF-TEeW-_a83-KI7Yg" type="RosPackage" name="beacon_robot_pose_estimate.ros_package_diagram" measurementUnit="Pixel">
+  <children xmi:type="notation:Shape" xmi:id="_9zstcF-TEeW-_a83-KI7Yg" type="2001" fontName="Ubuntu">
+    <children xmi:type="notation:DecorationNode" xmi:id="_9ztUgF-TEeW-_a83-KI7Yg" type="5008"/>
+    <children xmi:type="notation:BasicCompartment" xmi:id="_9ztUgV-TEeW-_a83-KI7Yg" type="7001">
+      <children xmi:type="notation:Node" xmi:id="_RyPfgF-UEeW-_a83-KI7Yg" type="3001">
+        <element xmi:type="ros:Parameter" href="beacon_robot_pose_estimate.ros_package#//@node.0/@parameter.0"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_RyPfgV-UEeW-_a83-KI7Yg"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_UH3TEF-UEeW-_a83-KI7Yg" type="3001">
+        <element xmi:type="ros:Parameter" href="beacon_robot_pose_estimate.ros_package#//@node.0/@parameter.1"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_UH3TEV-UEeW-_a83-KI7Yg"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_WHzKgF-UEeW-_a83-KI7Yg" type="3001">
+        <element xmi:type="ros:Parameter" href="beacon_robot_pose_estimate.ros_package#//@node.0/@parameter.2"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_WHzxkF-UEeW-_a83-KI7Yg"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_YxfwoF-UEeW-_a83-KI7Yg" type="3001">
+        <element xmi:type="ros:Parameter" href="beacon_robot_pose_estimate.ros_package#//@node.0/@parameter.3"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_YxfwoV-UEeW-_a83-KI7Yg"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_gAqGAF-UEeW-_a83-KI7Yg" type="3001">
+        <element xmi:type="ros:Parameter" href="beacon_robot_pose_estimate.ros_package#//@node.0/@parameter.4"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_gAqtEF-UEeW-_a83-KI7Yg"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_jFvAkF-UEeW-_a83-KI7Yg" type="3001">
+        <element xmi:type="ros:Parameter" href="beacon_robot_pose_estimate.ros_package#//@node.0/@parameter.5"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_jFvAkV-UEeW-_a83-KI7Yg"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_maOQIF-UEeW-_a83-KI7Yg" type="3001">
+        <element xmi:type="ros:Parameter" href="beacon_robot_pose_estimate.ros_package#//@node.0/@parameter.6"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_maOQIV-UEeW-_a83-KI7Yg"/>
+      </children>
+      <styles xmi:type="notation:TitleStyle" xmi:id="_9ztUgl-TEeW-_a83-KI7Yg" showTitle="true"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_9ztUg1-TEeW-_a83-KI7Yg"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_9ztUhF-TEeW-_a83-KI7Yg"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_KQTYEF-UEeW-_a83-KI7Yg" type="3007">
+      <children xmi:type="notation:DecorationNode" xmi:id="_KQT_IF-UEeW-_a83-KI7Yg" type="5007"/>
+      <styles xmi:type="notation:DescriptionStyle" xmi:id="_KQTYEV-UEeW-_a83-KI7Yg"/>
+      <styles xmi:type="notation:FontStyle" xmi:id="_KQTYEl-UEeW-_a83-KI7Yg" fontName="Ubuntu"/>
+      <element xmi:type="ros:Subscriber" href="beacon_robot_pose_estimate.ros_package#//@node.0/@subscriber.0"/>
+      <layoutConstraint xmi:type="notation:Bounds" xmi:id="_KQTYE1-UEeW-_a83-KI7Yg"/>
+    </children>
+    <element xmi:type="ros:Node" href="beacon_robot_pose_estimate.ros_package#//@node.0"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_9zstcV-TEeW-_a83-KI7Yg" x="336" y="84" width="361" height="289"/>
+  </children>
+  <styles xmi:type="notation:DiagramStyle" xmi:id="_9F6aYV-TEeW-_a83-KI7Yg"/>
+  <element xmi:type="ros:Package" href="beacon_robot_pose_estimate.ros_package#/"/>
+</notation:Diagram>
