@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <!-- Beacon TF -->
+  <node pkg="tf" type="static_transform_publisher" name="world2beacon_broadcaster" args="1.562 1.0 0 3.1415 0 0 /world /beacon_link 100"/>
+
+  <!-- LASER NODE -->
+  <node pkg="hokuyo_node" type="hokuyo_node" name="test_laser_publisher" output="screen">
+    <param name="port" value="/dev/ttyHOKUYO" />
+    <param name="frame_id" value="beacon_laser_link" />
+    <param name="min_ang" value="-1.7" />
+    <param name="max_ang" value="1.7" />
+    <!--<param name="skip" value="0" />
+    <param name="cluster" value="2" />-->
+
+    <remap from="/scan" to="/BEACON1/laser" />
+  </node>
+
+  <!-- PT Filter -->
+  <node pkg="beacon_pt_filter" type="beacon_pt_filter" name="beacon1_laser_filter_field" output="screen">
+    <param name="x_min" value="-1.5" />
+    <param name="x_max" value="1.5" />
+    <param name="y_min" value="0.0" />
+    <param name="y_max" value="2.0" />
+    <param name="world_frame_id" value="/world" />
+
+    <remap from="input" to="/BEACON1/laser" />
+    <remap from="output" to="/BEACON1/filtered_pcl" />
+  </node>
+
+  <!-- Position initialization -->
+  <node pkg="beacon_pose_init" type="beacon_pose_init" name="beacon1_pose_init" output="screen">
+    <param name="x_object1" value="0.0" />
+    <param name="y_object1" value="0.0" />
+    <param name="x_object2" value="0.0" />
+    <param name="y_object2" value="0.0" />
+    <param name="x_init_pose" value="0.0" />
+    <param name="y_init_pose" value="0.0" />
+    <param name="base_beacon_link" value="/beacon_link" />
+    <param name="laser_beacon_link" value="/beacon_laser_link" />
+
+    <remap from="input" to="/BEACON1/filtered_pcl" />
+  </node>
+
+  <!-- Robots detector -->
+  <node pkg="beacon_robot_pose_estimate" type="beacon_robot_pose_estimate" name="beacon1_robot_pose_estimator" output="screen">
+    <param name="x_robot1" value="0.0" />
+    <param name="y_robot1" value="0.0" />
+    <param name="x_robot2" value="0.0" />
+    <param name="y_robot2" value="0.0" />
+    <param name="world_link" value="/world" />
+    <param name="robot1_link" value="/gros_base_link" />
+    <param name="robot2_link" value="/petit_base_link" />
+
+    <remap from="input_cloud" to="/BEACON1/filtered_pcl" />
+  </node>
+
+
+
+</launch>
