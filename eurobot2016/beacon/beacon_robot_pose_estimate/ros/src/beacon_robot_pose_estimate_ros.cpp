@@ -4,6 +4,8 @@
 #include <beacon_robot_pose_estimate/beacon_robot_pose_estimateConfig.h>
 
 // ROS message includes
+#include <geometry_msgs/Pose2D.h>
+#include <geometry_msgs/Pose2D.h>
 #include <sensor_msgs/PointCloud2.h>
 
 // other includes
@@ -19,6 +21,8 @@ class beacon_robot_pose_estimate_ros
     dynamic_reconfigure::Server<beacon_robot_pose_estimate::beacon_robot_pose_estimateConfig> server;
     dynamic_reconfigure::Server<beacon_robot_pose_estimate::beacon_robot_pose_estimateConfig>::CallbackType f;
 
+    ros::Publisher robot1_pose_;
+    ros::Publisher robot2_pose_;
     ros::Subscriber input_cloud_;
 
     beacon_robot_pose_estimate_data component_data_;
@@ -31,6 +35,8 @@ class beacon_robot_pose_estimate_ros
         server.setCallback(f);
 
 
+        robot1_pose_ = n_.advertise<geometry_msgs::Pose2D>("robot1_pose", 1);
+        robot2_pose_ = n_.advertise<geometry_msgs::Pose2D>("robot2_pose", 1);
         input_cloud_ = n_.subscribe("input_cloud", 1, &beacon_robot_pose_estimate_impl::topicCallback_input_cloud, &component_implementation_);
 
         np_.param("x_robot1", component_config_.x_robot1, (double)0.0);
@@ -40,6 +46,7 @@ class beacon_robot_pose_estimate_ros
         np_.param("world_link", component_config_.world_link, (std::string)"world");
         np_.param("robot1_link", component_config_.robot1_link, (std::string)"robot1_base_link");
         np_.param("robot2_link", component_config_.robot2_link, (std::string)"robot2_base_link");
+        np_.param("detection_distance", component_config_.detection_distance, (double)0.07);
     }
     void topicCallback_input_cloud(const sensor_msgs::PointCloud2::ConstPtr& msg)
     {
@@ -55,6 +62,7 @@ class beacon_robot_pose_estimate_ros
         component_config_.world_link = config.world_link;
         component_config_.robot1_link = config.robot1_link;
         component_config_.robot2_link = config.robot2_link;
+        component_config_.detection_distance = config.detection_distance;
         configure();
     }
 
@@ -65,12 +73,18 @@ class beacon_robot_pose_estimate_ros
 
     void activate_all_output()
     {
+        component_data_.out_robot1_pose_active = true;
+        component_data_.out_robot2_pose_active = true;
     }
 
     void update()
     {
         activate_all_output();
         component_implementation_.update(component_data_, component_config_);
+        if (component_data_.out_robot1_pose_active)
+            robot1_pose_.publish(component_data_.out_robot1_pose);
+        if (component_data_.out_robot2_pose_active)
+            robot2_pose_.publish(component_data_.out_robot2_pose);
     }
 };
 

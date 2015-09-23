@@ -38,12 +38,27 @@ Node: beacon_robot_pose_estimate
 <!--- protected region robot2_link on begin -->
 <!--- protected region robot2_link end -->
 
+**detection_distance** *(double, default: 0.07)*
+<!--- protected region detection_distance on begin -->
+<!--- protected region detection_distance end -->
+
 
 #### Published Topics
+**robot1_pose** *(geometry_msgs::Pose2D)*   
+<!--- protected region robot1_pose on begin -->
+The published position of the robot 1.
+<!--- protected region robot1_pose end -->
+
+**robot2_pose** *(geometry_msgs::Pose2D)*   
+<!--- protected region robot2_pose on begin -->
+The published position of the robot 2.
+<!--- protected region robot2_pose end -->
+
 
 #### Subscribed Topics
 **input_cloud** *(sensor_msgs::PointCloud2)*   
 <!--- protected region input_cloud on begin -->
+The input PointCloud to find robots.
 <!--- protected region input_cloud end -->
 
 

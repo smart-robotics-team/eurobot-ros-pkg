@@ -31,6 +31,10 @@
         <element xmi:type="ros:Parameter" href="beacon_robot_pose_estimate.ros_package#//@node.0/@parameter.6"/>
         <layoutConstraint xmi:type="notation:Location" xmi:id="_maOQIV-UEeW-_a83-KI7Yg"/>
       </children>
+      <children xmi:type="notation:Node" xmi:id="_QkkfwGI3EeWXjYpOzFjAbA" type="3001">
+        <element xmi:type="ros:Parameter" href="beacon_robot_pose_estimate.ros_package#//@node.0/@parameter.7"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_QkkfwWI3EeWXjYpOzFjAbA"/>
+      </children>
       <styles xmi:type="notation:TitleStyle" xmi:id="_9ztUgl-TEeW-_a83-KI7Yg" showTitle="true"/>
       <styles xmi:type="notation:SortingStyle" xmi:id="_9ztUg1-TEeW-_a83-KI7Yg"/>
       <styles xmi:type="notation:FilteringStyle" xmi:id="_9ztUhF-TEeW-_a83-KI7Yg"/>
@@ -41,6 +45,20 @@
       <styles xmi:type="notation:FontStyle" xmi:id="_KQTYEl-UEeW-_a83-KI7Yg" fontName="Ubuntu"/>
       <element xmi:type="ros:Subscriber" href="beacon_robot_pose_estimate.ros_package#//@node.0/@subscriber.0"/>
       <layoutConstraint xmi:type="notation:Bounds" xmi:id="_KQTYE1-UEeW-_a83-KI7Yg"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_l71YQGI3EeWXjYpOzFjAbA" type="3004">
+      <children xmi:type="notation:DecorationNode" xmi:id="_l71_UGI3EeWXjYpOzFjAbA" type="5004"/>
+      <styles xmi:type="notation:DescriptionStyle" xmi:id="_l71YQWI3EeWXjYpOzFjAbA"/>
+      <styles xmi:type="notation:FontStyle" xmi:id="_l71YQmI3EeWXjYpOzFjAbA" fontName="Ubuntu"/>
+      <element xmi:type="ros:Publisher" href="beacon_robot_pose_estimate.ros_package#//@node.0/@publisher.0"/>
+      <layoutConstraint xmi:type="notation:Bounds" xmi:id="_l71YQ2I3EeWXjYpOzFjAbA" x="360" y="96"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_pONvAGI3EeWXjYpOzFjAbA" type="3004">
+      <children xmi:type="notation:DecorationNode" xmi:id="_pONvBGI3EeWXjYpOzFjAbA" type="5004"/>
+      <styles xmi:type="notation:DescriptionStyle" xmi:id="_pONvAWI3EeWXjYpOzFjAbA"/>
+      <styles xmi:type="notation:FontStyle" xmi:id="_pONvAmI3EeWXjYpOzFjAbA" fontName="Ubuntu"/>
+      <element xmi:type="ros:Publisher" href="beacon_robot_pose_estimate.ros_package#//@node.0/@publisher.1"/>
+      <layoutConstraint xmi:type="notation:Bounds" xmi:id="_pONvA2I3EeWXjYpOzFjAbA"/>
     </children>
     <element xmi:type="ros:Node" href="beacon_robot_pose_estimate.ros_package#//@node.0"/>
     <layoutConstraint xmi:type="notation:Bounds" xmi:id="_9zstcV-TEeW-_a83-KI7Yg" x="336" y="84" width="361" height="289"/>

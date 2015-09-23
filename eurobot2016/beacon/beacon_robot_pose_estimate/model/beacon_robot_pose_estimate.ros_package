@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ros:Package xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ros="http://ros/1.0" name="beacon_robot_pose_estimate" author="Joffrey Kriegel" author_email="kriegel.joffrey@gmail.com" description="The beacon_robot_pose_estimate package" license="GPLv3">
   <node name="beacon_robot_pose_estimate" frequency="50.0">
+    <publisher name="robot1_pose" msg="geometry_msgs::Pose2D"/>
+    <publisher name="robot2_pose" msg="geometry_msgs::Pose2D"/>
     <subscriber name="input_cloud" msg="sensor_msgs::PointCloud2"/>
     <parameter name="x_robot1" type="double" value="0.0"/>
     <parameter name="y_robot1" type="double" value="0.0"/>
@@ -9,6 +11,7 @@
     <parameter name="world_link" type="string" value="world"/>
     <parameter name="robot1_link" type="string" value="robot1_base_link"/>
     <parameter name="robot2_link" type="string" value="robot2_base_link"/>
+    <parameter name="detection_distance" type="double" value="0.07"/>
   </node>
   <depend>std_msgs</depend>
   <depend>geometry_msgs</depend>
