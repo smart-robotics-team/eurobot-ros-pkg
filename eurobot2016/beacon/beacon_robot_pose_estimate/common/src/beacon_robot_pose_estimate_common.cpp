@@ -125,7 +125,15 @@ public:
     	data.out_robot1_pose_active = robot1_output_ready;
     	if(robot1_output_ready)
     	{
-    		//data.out_robot1_pose.x = robots.at(0).pose.position.x;
+    		for (std::list<geometry_msgs::PoseStamped>::iterator it = robots.begin() ; it != robots.end(); ++it)
+    		{
+    			if(it->header.frame_id == "0")
+    			{
+    				data.out_robot1_pose.x = it->pose.position.x;
+    				data.out_robot1_pose.y = it->pose.position.y;
+    				data.out_robot1_pose.theta = tf::getYaw(it->pose.orientation);
+    			}
+    		}
     		robot1_output_ready = false;
     	}
     	else
@@ -136,6 +144,15 @@ public:
     	data.out_robot2_pose_active = robot2_output_ready;
     	if(robot2_output_ready)
 		{
+    		for (std::list<geometry_msgs::PoseStamped>::iterator it = robots.begin() ; it != robots.end(); ++it)
+			{
+				if(it->header.frame_id == "1")
+				{
+					data.out_robot2_pose.x = it->pose.position.x;
+					data.out_robot2_pose.y = it->pose.position.y;
+					data.out_robot2_pose.theta = tf::getYaw(it->pose.orientation);
+				}
+			}
 			robot2_output_ready = false;
 		}
 		else
@@ -148,6 +165,160 @@ public:
     void topicCallback_input_cloud(const sensor_msgs::PointCloud2::ConstPtr& msg)
     {
         /* protected region user implementation of subscribe callback for input_cloud on begin */
+
+        pcl::PCLPointCloud2::Ptr pcl_pc(new pcl::PCLPointCloud2 ());
+        pcl::PointCloud<pcl::PointXYZ>::Ptr pcl_cloud (new pcl::PointCloud<pcl::PointXYZ>);
+        pcl::PointCloud<pcl::PointXYZ>::Ptr final (new pcl::PointCloud<pcl::PointXYZ>);
+        pcl::PointCloud<pcl::PointXYZ>::Ptr final2 (new pcl::PointCloud<pcl::PointXYZ>);
+        pcl::PCLPointCloud2::Ptr cloud_out (new pcl::PCLPointCloud2 ());
+        sensor_msgs::PointCloud2 pc2;
+        std::vector<int> inliers;
+
+
+        // Transformation into PCL type PointCloud2
+        pcl_conversions::toPCL((*msg), *(pcl_pc));
+
+        // Transformation into PCL type PointCloud<pcl::PointXYZRGB>
+        pcl::fromPCLPointCloud2(*(pcl_pc), *(pcl_cloud));
+
+        std::list<geometry_msgs::PoseStamped> tmp_list;
+        int robot_counter = 0;
+        for (std::list<geometry_msgs::PoseStamped>::iterator it = robots.begin() ; it != robots.end(); ++it)
+        {
+
+            if(it->pose.orientation.x > 0.001)
+            { // Robot currently not seen
+
+                    ////////////////////////
+                    // PassThrough filter //
+                    ////////////////////////
+                    pcl::PassThrough<pcl::PointXYZ> pass;
+                    pass.setInputCloud (pcl_cloud);
+                    pass.setFilterFieldName ("x");
+                    pass.setFilterLimits (it->pose.position.x-localconfig.detection_distance-it->pose.orientation.x*0.002,
+                                            it->pose.position.x+localconfig.detection_distance+it->pose.orientation.x*0.002);
+                    //pass.setFilterLimitsNegative (true);
+                    pass.filter (*final2);
+
+                    pass.setInputCloud (final2);
+                    pass.setFilterFieldName ("y");
+                    pass.setFilterLimits (it->pose.position.y-localconfig.detection_distance-it->pose.orientation.x*0.002,
+                                            it->pose.position.y+localconfig.detection_distance+it->pose.orientation.x*0.002);
+                    //pass.setFilterLimitsNegative (true);
+                    pass.filter (*final2);
+
+
+            }
+            else
+            { // Robot seen
+
+                    ////////////////////////
+                    // PassThrough filter //
+                    ////////////////////////
+                    pcl::PassThrough<pcl::PointXYZ> pass;
+                    pass.setInputCloud (pcl_cloud);
+                    pass.setFilterFieldName ("x");
+                    pass.setFilterLimits (it->pose.position.x-localconfig.detection_distance, it->pose.position.x+localconfig.detection_distance);
+                    //pass.setFilterLimitsNegative (true);
+                    pass.filter (*final2);
+
+                    pass.setInputCloud (final2);
+                    pass.setFilterFieldName ("y");
+                    pass.setFilterLimits (it->pose.position.y-localconfig.detection_distance, it->pose.position.y+localconfig.detection_distance);
+                    //pass.setFilterLimitsNegative (true);
+                    pass.filter (*final2);
+
+
+                    pcl::ConditionOr<pcl::PointXYZ>::Ptr range_cond (new pcl::ConditionOr<pcl::PointXYZ> ());
+
+                    range_cond->addComparison (pcl::FieldComparison<pcl::PointXYZ>::ConstPtr (new
+                            pcl::FieldComparison<pcl::PointXYZ> ("x", pcl::ComparisonOps::GT, it->pose.position.x+localconfig.detection_distance)));
+
+                    range_cond->addComparison (pcl::FieldComparison<pcl::PointXYZ>::ConstPtr (new
+                            pcl::FieldComparison<pcl::PointXYZ> ("x", pcl::ComparisonOps::LT, it->pose.position.x-localconfig.detection_distance)));
+
+                    range_cond->addComparison (pcl::FieldComparison<pcl::PointXYZ>::ConstPtr (new
+                            pcl::FieldComparison<pcl::PointXYZ> ("y", pcl::ComparisonOps::GT, it->pose.position.y+localconfig.detection_distance)));
+
+                    range_cond->addComparison (pcl::FieldComparison<pcl::PointXYZ>::ConstPtr (new
+                            pcl::FieldComparison<pcl::PointXYZ> ("y", pcl::ComparisonOps::LT, it->pose.position.y-localconfig.detection_distance)));
+
+
+                    // build the filter
+                    pcl::ConditionalRemoval<pcl::PointXYZ> condrem (range_cond);
+                    condrem.setInputCloud (pcl_cloud);
+                    condrem.setKeepOrganized(true);
+                    // apply filter
+                    condrem.filter (*pcl_cloud);
+
+
+            }
+
+            if(final2->size() > 2)
+            { // Something in the box
+
+                    double meanX = 0.0;
+                    double meanY = 0.0;
+                    for(int i = 0; i < final2->size(); i++)
+                    {
+                            meanX += final2->at(i).x;
+                            meanY += final2->at(i).y;
+                    }
+                    meanX = meanX / final2->size();
+                    meanY = meanY / final2->size();
+
+                    //robots.at(robot_counter).pose.position.x = meanX;
+                    //robots.at(robot_counter).pose.position.y = meanY;
+                    it->pose.position.x = meanX;
+                    it->pose.position.y = meanY;
+
+                    char numstr[50];
+                    sprintf(numstr, "/robot_%s_link", it->header.frame_id.c_str());
+
+                    t = tf::StampedTransform(tf::Transform(tf::createQuaternionFromYaw(0.0), tf::Vector3(meanX, meanY, 0.0)),
+                                    ros::Time::now(), "/world", numstr);
+
+                    t.stamp_ = ros::Time::now();
+                    broadcaster.sendTransform(t);
+
+                    it->pose.orientation.x = 0.0;
+
+                    tmp_list.push_front(*it);
+                    if(it->header.frame_id == "0")
+                    {
+                    	robot1_output_ready = true;
+                    }
+                    else
+                    {
+                    	robot2_output_ready = true;
+                    }
+
+
+                    //std::cout << "size : " << final2->size() << std::endl;
+            }
+            else
+            { // Nothing found in the box
+                    it->pose.orientation.x += 1.0;
+                    if(it->pose.orientation.x > 100.0)
+                    {
+                            it->pose.orientation.x = 100.0;
+                    }
+                    //std::cout << "coef : " << it->pose.orientation.x << std::endl;
+                    geometry_msgs::PoseStamped tmp = *it;
+                    //robots.push_back(*it);
+                    //robots.erase(it);
+                    //robots.push_back(tmp);
+
+                    tmp_list.push_back(*it);
+
+            }
+            robot_counter++;
+
+        }
+
+        robots = tmp_list;
+
+
         /* protected region user implementation of subscribe callback for input_cloud end */
     }
 
