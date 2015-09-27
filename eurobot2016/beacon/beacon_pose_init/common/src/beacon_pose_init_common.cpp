@@ -69,7 +69,6 @@ class beacon_pose_init_impl
 	tf::TransformBroadcaster broadcaster;
 
 	double x, y, yaw;
-	double side;
 
 	int state;
 	int cpt;
@@ -81,9 +80,6 @@ class beacon_pose_init_impl
 	beacon_pose_init_impl() 
 	{
 		/* protected region user constructor on begin */
-		side = -1.0;
-
-
 		state = STATE_1;
 		cpt = 0;
 
@@ -198,7 +194,7 @@ class beacon_pose_init_impl
 							}
 							mean2 = mean2 / final2->size();
 
-							yaw += (mean2 - mean)/10;
+							yaw += ( (mean2-localconfig.x_object2) - (mean-localconfig.x_object1) )/10;
 							cpt++;
 
 						}
@@ -242,7 +238,7 @@ class beacon_pose_init_impl
 							}
 							mean2 = mean2 / final2->size();
 
-							y += -(0.05 - mean)/4;
+							y += -(localconfig.y_object1 - mean)/4;
 							cpt++;
 
 						}
@@ -277,7 +273,7 @@ class beacon_pose_init_impl
 						}
 						mean = mean / final->size();
 
-						x += -(side*1.45 - mean)/4;
+						x += -(localconfig.x_object1 - mean)/4;
 						cpt++;
 					}
 					else
