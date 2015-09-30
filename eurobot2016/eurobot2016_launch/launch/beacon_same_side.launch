@@ -35,8 +35,8 @@
     <param name="y_object1" value="0.2" />
     <param name="x_object2" value="0.0" />
     <param name="y_object2" value="1.0" />
-    <param name="x_init_pose" value="0.0" />
-    <param name="y_init_pose" value="0.0" />
+    <param name="x_init_pose" value="-0.02" />
+    <param name="y_init_pose" value="-0.015" />
     <param name="base_beacon_link" value="/beacon_link" />
     <param name="laser_beacon_link" value="/beacon_laser_link" />
 
@@ -54,6 +54,8 @@
     <param name="robot2_link" value="/petit_base_link" />
 
     <remap from="input_cloud" to="/BEACON1/filtered_pcl" />
+    <remap from="robot1_pose" to="/GROS/beacon_pose" />
+    <remap from="robot2_pose" to="/PETIT/beacon_pose" />
   </node>
 
 

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <!-- LASER NODE -->
+  <node pkg="common_odom_estimation" type="common_odom_estimation" name="PETIT_odom_estimation" output="screen">
+    <param name="enable_imu" value="false" />
+    <param name="enable_fake" value="true" />
+    <param name="enable_beacon" value="true" />
+    <param name="parent_link" value="world" />
+    <param name="child_link" value="petit_base_link" />
+    <param name="poseX" value="1.0" />
+    <param name="poseY" value="1.2" />
+    <param name="theta" value="1.57" />
+
+    <remap from="/imu" to="/PETIT/imu" />
+    <remap from="/cmd_vel" to="/PETIT/cmd_vel" />
+    <remap from="/beacon" to="/GROS/beacon_pose" />
+    <remap from="/odom_est" to="/PETIT/odom_est" />
+  </node>
+
+
+
+</launch>
