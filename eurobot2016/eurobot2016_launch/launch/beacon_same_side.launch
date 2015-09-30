@@ -32,9 +32,9 @@
   <!-- Position initialization -->
   <node pkg="beacon_pose_init" type="beacon_pose_init" name="beacon1_pose_init" output="screen">
     <param name="x_object1" value="0.0" />
-    <param name="y_object1" value="0.0" />
+    <param name="y_object1" value="0.2" />
     <param name="x_object2" value="0.0" />
-    <param name="y_object2" value="0.0" />
+    <param name="y_object2" value="1.0" />
     <param name="x_init_pose" value="0.0" />
     <param name="y_init_pose" value="0.0" />
     <param name="base_beacon_link" value="/beacon_link" />
@@ -45,8 +45,8 @@
 
   <!-- Robots detector -->
   <node pkg="beacon_robot_pose_estimate" type="beacon_robot_pose_estimate" name="beacon1_robot_pose_estimator" output="screen">
-    <param name="x_robot1" value="0.0" />
-    <param name="y_robot1" value="0.0" />
+    <param name="x_robot1" value="1.0" />
+    <param name="y_robot1" value="1.3" />
     <param name="x_robot2" value="0.0" />
     <param name="y_robot2" value="0.0" />
     <param name="world_link" value="/world" />
