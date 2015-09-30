@@ -143,13 +143,13 @@ class beacon_pose_init_impl
 			pcl::PassThrough<pcl::PointXYZ> pass;
 			pass.setInputCloud (pcl_cloud);
 			pass.setFilterFieldName ("x");
-			pass.setFilterLimits (localconfig.x_object1-0.05, localconfig.x_object1+0.05);
+			pass.setFilterLimits (localconfig.x_object1-0.10, localconfig.x_object1+0.10);
 			//pass.setFilterLimitsNegative (true);
 			pass.filter (*final);
 
 			pass.setInputCloud (final);
 			pass.setFilterFieldName ("y");
-			pass.setFilterLimits (localconfig.y_object1-0.05, localconfig.y_object1+0.05);
+			pass.setFilterLimits (localconfig.y_object1-0.10, localconfig.y_object1+0.10);
 			//pass.setFilterLimitsNegative (true);
 			pass.filter (*final);
 
@@ -158,13 +158,13 @@ class beacon_pose_init_impl
 			////////////////////////
 			pass.setInputCloud (pcl_cloud);
 			pass.setFilterFieldName ("x");
-			pass.setFilterLimits (localconfig.x_object2-0.05, localconfig.x_object2+0.05);
+			pass.setFilterLimits (localconfig.x_object2-0.10, localconfig.x_object2+0.10);
 			//pass.setFilterLimitsNegative (true);
 			pass.filter (*final2);
 
 			pass.setInputCloud (final2);
 			pass.setFilterFieldName ("y");
-			pass.setFilterLimits (localconfig.y_object2-0.05, localconfig.y_object2+0.05);
+			pass.setFilterLimits (localconfig.y_object2-0.10, localconfig.y_object2+0.10);
 			//pass.setFilterLimitsNegative (true);
 			pass.filter (*final2);
 

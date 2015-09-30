@@ -112,7 +112,23 @@ public:
     {
         /* protected region user configure on begin */
     	localconfig = config;
-    	//robots. .at(0).pose.position.x = localconfig.x_robot1;
+    	int i = 0;
+	for (std::list<geometry_msgs::PoseStamped>::iterator it = robots.begin() ; it != robots.end(); ++it)
+        {
+		if(i == 0)
+		{
+        		it->pose.position.x = localconfig.x_robot1;
+        		it->pose.position.y = localconfig.y_robot1;
+		}
+		else
+		{
+			it->pose.position.x = localconfig.x_robot2;
+                        it->pose.position.y = localconfig.y_robot2;
+		}
+		i++;
+        }
+
+	//robots. .at(0).pose.position.x = localconfig.x_robot1;
     	//robots.at(0).pose.position.y = localconfig.y_robot1;
     	//robots.at(1).pose.position.x = localconfig.x_robot2;
     	//robots.at(1).pose.position.y = localconfig.y_robot2;
