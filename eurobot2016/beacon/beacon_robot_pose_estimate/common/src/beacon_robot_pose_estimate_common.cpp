@@ -285,8 +285,8 @@ public:
 
                     //robots.at(robot_counter).pose.position.x = meanX;
                     //robots.at(robot_counter).pose.position.y = meanY;
-                    it->pose.position.x = meanX;
-                    it->pose.position.y = meanY;
+                    it->pose.position.x = (meanX + it->pose.position.x) / 2.0;
+                    it->pose.position.y = (meanY + it->pose.position.y) / 2.0;
 
                     char numstr[50];
                     sprintf(numstr, "/robot_%s_link", it->header.frame_id.c_str());
