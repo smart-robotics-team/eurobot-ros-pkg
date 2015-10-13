@@ -3,6 +3,8 @@
 #include <geometry_msgs/Pose2D.h>
 #include <geometry_msgs/Pose2D.h>
 #include <sensor_msgs/PointCloud2.h>
+#include <nav_msgs/Odometry.h>
+#include <nav_msgs/Odometry.h>
 
 /* protected region user include files on begin */
 #include <tf/transform_broadcaster.h>
@@ -57,6 +59,8 @@ class beacon_robot_pose_estimate_data
 public:
     //input data
     sensor_msgs::PointCloud2 in_input_cloud;
+    nav_msgs::Odometry in_odom1;
+    nav_msgs::Odometry in_odom2;
     //output data
     geometry_msgs::Pose2D out_robot1_pose;
     bool out_robot1_pose_active;
@@ -181,7 +185,6 @@ public:
     void topicCallback_input_cloud(const sensor_msgs::PointCloud2::ConstPtr& msg)
     {
         /* protected region user implementation of subscribe callback for input_cloud on begin */
-
         pcl::PCLPointCloud2::Ptr pcl_pc(new pcl::PCLPointCloud2 ());
         pcl::PointCloud<pcl::PointXYZ>::Ptr pcl_cloud (new pcl::PointCloud<pcl::PointXYZ>);
         pcl::PointCloud<pcl::PointXYZ>::Ptr final (new pcl::PointCloud<pcl::PointXYZ>);
@@ -336,6 +339,16 @@ public:
 
 
         /* protected region user implementation of subscribe callback for input_cloud end */
+    }
+    void topicCallback_odom1(const nav_msgs::Odometry::ConstPtr& msg)
+    {
+        /* protected region user implementation of subscribe callback for odom1 on begin */
+        /* protected region user implementation of subscribe callback for odom1 end */
+    }
+    void topicCallback_odom2(const nav_msgs::Odometry::ConstPtr& msg)
+    {
+        /* protected region user implementation of subscribe callback for odom2 on begin */
+        /* protected region user implementation of subscribe callback for odom2 end */
     }
 
 

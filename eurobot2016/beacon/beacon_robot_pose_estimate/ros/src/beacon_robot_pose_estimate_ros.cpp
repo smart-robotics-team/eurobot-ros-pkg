@@ -7,6 +7,8 @@
 #include <geometry_msgs/Pose2D.h>
 #include <geometry_msgs/Pose2D.h>
 #include <sensor_msgs/PointCloud2.h>
+#include <nav_msgs/Odometry.h>
+#include <nav_msgs/Odometry.h>
 
 // other includes
 #include <beacon_robot_pose_estimate_common.cpp>
@@ -24,6 +26,8 @@ class beacon_robot_pose_estimate_ros
     ros::Publisher robot1_pose_;
     ros::Publisher robot2_pose_;
     ros::Subscriber input_cloud_;
+    ros::Subscriber odom1_;
+    ros::Subscriber odom2_;
 
     beacon_robot_pose_estimate_data component_data_;
     beacon_robot_pose_estimate_config component_config_;
@@ -38,6 +42,8 @@ class beacon_robot_pose_estimate_ros
         robot1_pose_ = n_.advertise<geometry_msgs::Pose2D>("robot1_pose", 1);
         robot2_pose_ = n_.advertise<geometry_msgs::Pose2D>("robot2_pose", 1);
         input_cloud_ = n_.subscribe("input_cloud", 1, &beacon_robot_pose_estimate_impl::topicCallback_input_cloud, &component_implementation_);
+        odom1_ = n_.subscribe("odom1", 1, &beacon_robot_pose_estimate_impl::topicCallback_odom1, &component_implementation_);
+        odom2_ = n_.subscribe("odom2", 1, &beacon_robot_pose_estimate_impl::topicCallback_odom2, &component_implementation_);
 
         np_.param("x_robot1", component_config_.x_robot1, (double)0.0);
         np_.param("y_robot1", component_config_.y_robot1, (double)0.0);
@@ -51,6 +57,14 @@ class beacon_robot_pose_estimate_ros
     void topicCallback_input_cloud(const sensor_msgs::PointCloud2::ConstPtr& msg)
     {
         component_data_.in_input_cloud = *msg;
+    }
+    void topicCallback_odom1(const nav_msgs::Odometry::ConstPtr& msg)
+    {
+        component_data_.in_odom1 = *msg;
+    }
+    void topicCallback_odom2(const nav_msgs::Odometry::ConstPtr& msg)
+    {
+        component_data_.in_odom2 = *msg;
     }
 
     void configure_callback(beacon_robot_pose_estimate::beacon_robot_pose_estimateConfig &config, uint32_t level)

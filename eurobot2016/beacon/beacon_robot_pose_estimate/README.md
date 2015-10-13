@@ -61,5 +61,13 @@ The published position of the robot 2.
 The input PointCloud to find robots.
 <!--- protected region input_cloud end -->
 
+**odom1** *(nav_msgs::Odometry)*   
+<!--- protected region odom1 on begin -->
+<!--- protected region odom1 end -->
+
+**odom2** *(nav_msgs::Odometry)*   
+<!--- protected region odom2 on begin -->
+<!--- protected region odom2 end -->
+
 
 

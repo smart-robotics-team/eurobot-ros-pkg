@@ -124,6 +124,41 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>[Targets]/[exe] beacon_robot_pose_estimate</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] beacon_robot_pose_estimate/</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] beacon_robot_pose_estimate/Source Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] beacon_robot_pose_estimate/Source Files/beacon_robot_pose_estimate_ros.cpp</name>
+			<type>1</type>
+			<location>/home/viki/catkin_ws/src/eurobot-ros-pkg/eurobot2016/beacon/beacon_robot_pose_estimate/ros/src/beacon_robot_pose_estimate_ros.cpp</location>
+		</link>
+		<link>
+			<name>[Targets]/[exe] beacon_robot_pose_estimate/Header Files</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] beacon_robot_pose_estimate/CMake Rules</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>[Targets]/[exe] beacon_robot_pose_estimate/Resources</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>[Targets]/[lib] gtest</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
