@@ -2,9 +2,20 @@
 
 <launch>
 
-  <!-- LASER NODE -->
+  <!-- Low level motor driver => RoboClaw -->
+  <node pkg="carry_navigation" type="carry_drive_roboclaw" respawn="false" name="PETIT_RoboClawDriver" output="screen">
+        <remap from="/cmd_vel" to="/PETIT/cmd_vel" />
+  </node>
+
+  <!-- IMU for PETIT robot -->
+  <node pkg="um6" type="um6_driver" respawn="false" name="PETIT_imu_driver" output="screen">
+        <param name="port" type="str" value="/dev/ttyUM6" />
+    	<remap from="/imu/data" to="/PETIT/imu" />
+  </node>
+
+  <!-- Position estimation node -->
   <node pkg="common_odom_estimation" type="common_odom_estimation" name="PETIT_odom_estimation" output="screen">
-    <param name="enable_imu" value="false" />
+    <param name="enable_imu" value="true" />
     <param name="enable_fake" value="true" />
     <param name="enable_beacon" value="true" />
     <param name="parent_link" value="world" />
@@ -13,6 +24,7 @@
     <param name="poseY" value="1.2" />
     <param name="theta" value="1.57" />
 
+    <remap from="/init" to="/PETIT/init" />
     <remap from="/imu" to="/PETIT/imu" />
     <remap from="/cmd_vel" to="/PETIT/cmd_vel" />
     <remap from="/beacon" to="/GROS/beacon_pose" />
