@@ -343,11 +343,27 @@ public:
     void topicCallback_odom1(const nav_msgs::Odometry::ConstPtr& msg)
     {
         /* protected region user implementation of subscribe callback for odom1 on begin */
-        /* protected region user implementation of subscribe callback for odom1 end */
+        for (std::list<geometry_msgs::PoseStamped>::iterator it = robots.begin() ; it != robots.end(); ++it)
+        {
+        	if(it->header.frame_id == "0")
+                {
+                	it->pose.position.x = msg->pose.pose.position.x;
+                        it->pose.position.y = msg->pose.pose.position.y;
+                }
+        }
+	/* protected region user implementation of subscribe callback for odom1 end */
     }
     void topicCallback_odom2(const nav_msgs::Odometry::ConstPtr& msg)
     {
         /* protected region user implementation of subscribe callback for odom2 on begin */
+	for (std::list<geometry_msgs::PoseStamped>::iterator it = robots.begin() ; it != robots.end(); ++it)
+        {
+                if(it->header.frame_id == "1")
+                {
+                        it->pose.position.x = msg->pose.pose.position.x;
+                        it->pose.position.y = msg->pose.pose.position.y;
+                }
+        }
         /* protected region user implementation of subscribe callback for odom2 end */
     }
 
