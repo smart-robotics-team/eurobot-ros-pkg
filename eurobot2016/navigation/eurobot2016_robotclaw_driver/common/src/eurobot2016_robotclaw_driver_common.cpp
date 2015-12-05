@@ -100,7 +100,7 @@ public:
 #else
 
         //fd = open("/dev/ttyROBOCLAW", O_RDWR | O_NOCTTY | O_NDELAY);
-        fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
+        fd = open("/dev/ttyNEATO", O_RDWR | O_NOCTTY | O_NDELAY);
 
         if(fd == -1) // if open is unsucessful
         {
