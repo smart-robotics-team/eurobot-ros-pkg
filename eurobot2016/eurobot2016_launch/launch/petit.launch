@@ -31,6 +31,24 @@
     <remap from="/odom_est" to="/PETIT/odom_est" />
   </node>
 
+  <!-- Arduino on the Odroid-U3 -->
+  <node pkg="rosserial_python" type="serial_node.py" respawn="false" name="PETIT_Odruino" output="screen" args="/dev/ttySAC0">
+        <remap from="/servo1" to="/PETIT/servo1" />
+        <remap from="/servo2" to="/PETIT/servo2" />
+        <remap from="/servo3" to="/PETIT/servo3" />
+        <remap from="/servo4" to="/PETIT/servo4" />
+        <remap from="/servo5" to="/PETIT/servo5" />
+        <remap from="/servo6" to="/PETIT/servo6" />
+        <remap from="/servo7" to="/PETIT/servo7" />
+        <remap from="/servo8" to="/PETIT/servo8" />
+        <remap from="/servo9" to="/PETIT/servo9" />
+        <remap from="/servo10" to="/PETIT/servo10" />
+        <remap from="/servo11" to="/PETIT/servo11" />
+        <remap from="/servo12" to="/PETIT/servo12" />
+        <remap from="/servo_speed" to="/PETIT/servo_speed" />
+        <remap from="/enable_servo" to="/PETIT/enable_servo" />
+  </node>
+
 
 
 </launch>
