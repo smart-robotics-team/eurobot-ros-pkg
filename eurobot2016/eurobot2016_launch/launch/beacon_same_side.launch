@@ -6,7 +6,7 @@
   <node pkg="tf" type="static_transform_publisher" name="world2beacon_broadcaster" args="1.562 1.0 0 3.1415 0 0 /world /beacon_link 100"/>
 
   <!-- LASER NODE -->
-  <node pkg="hokuyo_node" type="hokuyo_node" name="test_laser_publisher" output="screen">
+  <node pkg="hokuyo_node" type="hokuyo_node" name="beacon1_laser_publisher" output="screen">
     <param name="port" value="/dev/ttyHOKUYO" />
     <param name="frame_id" value="beacon_laser_link" />
     <param name="min_ang" value="-1.7" />
