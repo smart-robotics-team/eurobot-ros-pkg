@@ -3,7 +3,7 @@
 <launch>
 
   <!-- Low level motor driver => RoboClaw -->
-  <node pkg="carry_navigation" type="carry_drive_roboclaw" respawn="false" name="PETIT_RoboClawDriver" output="screen">
+  <node pkg="holonomic_robotclaw_driver" type="holonomic_robotclaw_driver" respawn="false" name="PETIT_RoboClawDriver" output="screen">
         <remap from="/cmd_vel" to="/PETIT/cmd_vel" />
   </node> 
 
@@ -32,7 +32,7 @@
   </node>
 
   <!-- Arduino on the Odroid-U3 -->
-  <node pkg="rosserial_python" type="serial_node.py" respawn="false" name="PETIT_Odruino" output="screen" args="/dev/ttySAC0">
+<!--  <node pkg="rosserial_python" type="serial_node.py" respawn="false" name="PETIT_Odruino" output="screen" args="/dev/ttySAC0">
         <remap from="/servo1" to="/PETIT/servo1" />
         <remap from="/servo2" to="/PETIT/servo2" />
         <remap from="/servo3" to="/PETIT/servo3" />
@@ -48,10 +48,10 @@
         <remap from="/servo_speed" to="/PETIT/servo_speed" />
         <remap from="/enable_servo" to="/PETIT/enable_servo" />
   </node>
-
+-->
 
   <!-- Path planner / Costmap -->
-  <node pkg="common_smart_nav" type="pathplanner" respawn="false" name="PETIT_pathplanner" output="screen">
+<!--  <node pkg="common_smart_nav" type="pathplanner" respawn="false" name="PETIT_pathplanner" output="screen">
     <param name="costmap_name" type="str" value="PETIT_costmap" />
     <param name="planner_name" type="str" value="PETIT_planner" />
     <param name="map_name" type="str" value="world" />
@@ -69,9 +69,9 @@
         <remap from="/ROBOT/get_distance" to="/PETIT/get_distance" />
         <remap from="/ROBOT/get_path" to="/PETIT/get_path" />
   </node>
-
+-->
   <!-- Path wrapper = Path follower -->
-  <node pkg="common_smart_nav" type="pathwrapper" respawn="false" name="PETIT_pathwrapper" output="screen">
+<!--  <node pkg="common_smart_nav" type="pathwrapper" respawn="false" name="PETIT_pathwrapper" output="screen">
     <param name="map_name" type="str" value="world" />
     <param name="base_name" type="str" value="petit_base_link" />
 
@@ -91,6 +91,6 @@
         <remap from="/path_done" to="/PETIT/path_done" />
         <remap from="/pause_planner" to="/PETIT/pause_planner" />
   </node>
-
+-->
 
 </launch>
