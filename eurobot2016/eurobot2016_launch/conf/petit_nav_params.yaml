@@ -10,7 +10,7 @@ PETIT_costmap:
   #footprint: [[-0.1, -0.1], [-0.1, 0.1], [0.1, 0.1], [0.1, -0.1]]
   robot_radius: 0.20
   static_map: false
-  resolution: 0.01
+  resolution: 0.03
   map_type: costmap
   rolling_window: false
   width: 10.0
@@ -24,7 +24,7 @@ PETIT_costmap:
 #    lethal_cost_threshold: 100
 
   obstacles:
-    observation_sources: fixed_obstacles, PETIT_nav_laser
+    observation_sources: fixed_obstacles PETIT_nav_laser
     PETIT_nav_laser: {sensor_frame: /world, data_type: PointCloud2, topic: /PETIT/obstacle_pcl, marking: true, clearing: true, obstacle_range: 3.0}
     fixed_obstacles: {sensor_frame: /world, data_type: PointCloud, topic: /PETIT/fixed_obstacles, marking: true, clearing: false, obstacle_range: 3.0}
     track_unknown_space: false
