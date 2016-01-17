@@ -49,6 +49,23 @@
         <remap from="/enable_servo" to="/PETIT/enable_servo" />
   </node>
 
+  <!-- Robot mandibles -->
+  <node pkg="robot_mandibles" type="robot_mandibles" respawn="false" name="PETIT_mandibles" output="screen">
+        <param name="servo1_position0" value="54" />
+        <param name="servo2_position0" value="109" />
+        <param name="servo1_position1" value="158" />
+        <param name="servo2_position1" value="10" />
+        <param name="servo1_position2" value="154" />
+        <param name="servo2_position2" value="16" />
+        <param name="move_speed" value="3" />
+        <param name="wait_step_1_to_2" value="0.7" />
+
+	<remap from="/position" to="/PETIT/mandibles_position" />
+        <remap from="/servo1" to="/PETIT/servo4" />
+        <remap from="/servo2" to="/PETIT/servo2" />
+        <remap from="/servo_speed" to="/PETIT/servo_speed" />
+  </node>
+
 
   <!-- Path planner / Costmap -->
 <!--  <node pkg="common_smart_nav" type="pathplanner" respawn="false" name="PETIT_pathplanner" output="screen">
