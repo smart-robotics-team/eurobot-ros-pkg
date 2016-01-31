@@ -7,7 +7,7 @@ int main(int argc, char** argv){
   ros::NodeHandle n;
   ros::Publisher cloud_pub = n.advertise<sensor_msgs::PointCloud>("cloud", 50);
 
-  unsigned int num_points = 85;
+  unsigned int num_points = 92;
 
   int count = 0;
   ros::Rate r(7.0);
@@ -323,23 +323,23 @@ int main(int argc, char** argv){
       cloud.channels[0].values[56] = 199;
 
 
-      cloud.points[57].x = 0.4;
-      cloud.points[57].y = 1.85;
+      cloud.points[57].x = 0.1;
+      cloud.points[57].y = 1.240;
       cloud.points[57].z = 0.0;
       cloud.channels[0].values[57] = 199;
 
-      cloud.points[58].x = 0.575;
-      cloud.points[58].y = 1.7;
+      cloud.points[58].x = 0.3;
+      cloud.points[58].y = 1.240;
       cloud.points[58].z = 0.0;
       cloud.channels[0].values[58] = 199;
 
-      cloud.points[59].x = 0.925;
-      cloud.points[59].y = 1.7;
+      cloud.points[59].x = 0.5;
+      cloud.points[59].y = 1.240;
       cloud.points[59].z = 0.0;
       cloud.channels[0].values[59] = 199;
 
-      cloud.points[60].x = 1.1;
-      cloud.points[60].y = 1.85;
+      cloud.points[60].x = 0.6;
+      cloud.points[60].y = 1.240;
       cloud.points[60].z = 0.0;
       cloud.channels[0].values[60] = 199;
 
@@ -446,26 +446,61 @@ int main(int argc, char** argv){
       cloud.channels[0].values[80] = 199;
 
 
-      cloud.points[81].x = -0.4;
-      cloud.points[81].y = 1.85;
+      cloud.points[81].x = -0.6;
+      cloud.points[81].y = 1.240;
       cloud.points[81].z = 0.0;
       cloud.channels[0].values[81] = 199;
 
-      cloud.points[82].x = -0.575;
-      cloud.points[82].y = 1.7;
+      cloud.points[82].x = -0.4;
+      cloud.points[82].y = 1.240;
       cloud.points[82].z = 0.0;
       cloud.channels[0].values[82] = 199;
 
-      cloud.points[83].x = -0.925;
-      cloud.points[83].y = 1.7;
+      cloud.points[83].x = -0.2;
+      cloud.points[83].y = 1.240;
       cloud.points[83].z = 0.0;
       cloud.channels[0].values[83] = 199;
 
-      cloud.points[84].x = -1.1;
-      cloud.points[84].y = 1.85;
+      cloud.points[84].x = 0.0;
+      cloud.points[84].y = 1.240;
       cloud.points[84].z = 0.0;
       cloud.channels[0].values[84] = 199;
 
+      cloud.points[85].x = 0.0;
+      cloud.points[85].y = 1.040;
+      cloud.points[85].z = 0.0;
+      cloud.channels[0].values[85] = 199;
+
+      cloud.points[86].x = 0.0;
+      cloud.points[86].y = 0.840;
+      cloud.points[86].z = 0.0;
+      cloud.channels[0].values[86] = 199;
+
+      cloud.points[87].x = 0.0;
+      cloud.points[87].y = 0.630;
+      cloud.points[87].z = 0.0;
+      cloud.channels[0].values[87] = 199;
+
+
+      cloud.points[88].x = 0.690;
+      cloud.points[88].y = 1.800;
+      cloud.points[88].z = 0.0;
+      cloud.channels[0].values[88] = 199;
+
+      cloud.points[89].x = -0.690;
+      cloud.points[89].y = 1.800;
+      cloud.points[89].z = 0.0;
+      cloud.channels[0].values[89] = 199;
+
+      cloud.points[90].x = 0.560;
+      cloud.points[90].y = 0.022;
+      cloud.points[90].z = 0.0;
+      cloud.channels[0].values[90] = 199;
+
+      cloud.points[91].x = -0.560;
+      cloud.points[91].y = 0.022;
+      cloud.points[91].z = 0.0;
+      cloud.channels[0].values[91] = 199;
 
 
 

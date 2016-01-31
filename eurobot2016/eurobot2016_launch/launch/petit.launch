@@ -54,7 +54,7 @@
         <param name="servo1_position0" value="54" />
         <param name="servo2_position0" value="109" />
         <param name="servo1_position1" value="158" />
-        <param name="servo2_position1" value="10" />
+        <param name="servo2_position1" value="7" />
         <param name="servo1_position2" value="154" />
         <param name="servo2_position2" value="16" />
         <param name="move_speed" value="3" />

@@ -68,7 +68,7 @@
 
   <!-- Robots detector -->
   <node pkg="remove_self_pointcloud" type="remove_self_pointcloud" name="PETIT_remove_self_pointcloud" output="screen">
-    <param name="inhib_size" value="0.05" />
+    <param name="inhib_size" value="0.06" />
 
     <remap from="input" to="/BEACON1/filtered_pcl" />
     <remap from="robot_position" to="/PETIT/odom_est" />
