@@ -57,6 +57,8 @@
         <param name="servo2_position1" value="7" />
         <param name="servo1_position2" value="154" />
         <param name="servo2_position2" value="16" />
+        <param name="servo1_position3" value="130" />
+        <param name="servo2_position3" value="30" />
         <param name="move_speed" value="3" />
         <param name="wait_step_1_to_2" value="0.7" />
 
