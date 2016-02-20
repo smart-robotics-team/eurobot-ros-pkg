@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<launch>
+  <master auto="start"/>
+
+  <node pkg="map_server" type="map_server" respawn="false" name="EUROBOT_map_node" output="screen" args="$(find eurobot2016_launch)/conf/map.yaml">>
+        <param name="frame_id" type="str" value="world" />
+        <remap from="/map" to="/WORLD/map" />
+        <remap from="/map_metadata" to="/WORLD/map_metadata" />
+  </node>
+
+</launch>
