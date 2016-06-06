@@ -18,6 +18,8 @@
 
 //#include <common_smart_nav/ArduGoal.h>
 
+#include <Servo.h>
+
 
 #include <stdio.h>
 // Other includes
@@ -202,6 +204,12 @@ int reverse_mode = 0;
 
 double ticks_per_m = TOTAL_TICKS / WHEEL_PERIMETER;
 double m_per_tick = WHEEL_PERIMETER / TOTAL_TICKS;
+
+
+
+Servo left_servo;  // create servo object to control a servo
+Servo right_servo;  // create servo object to control a servo
+
 
 double ticks_per_rad = (TOTAL_TICKS / TURN_PERIMETER) / TWOPI;
 double rad_per_tick = 1 / ticks_per_rad;
@@ -417,6 +425,23 @@ void colorCb(const std_msgs::Int32 & msg)
 }
 
 ros::Subscriber < std_msgs::Int32 > ros_color("color", &colorCb);
+
+void leftServoCb(const std_msgs::Int32 & msg)
+{
+  left_servo.write(msg.data);
+}
+ros::Subscriber < std_msgs::Int32 > left_servo_ros("left_servo", &leftServoCb);
+
+void rightServoCb(const std_msgs::Int32 & msg)
+{
+  right_servo.write(msg.data);
+}
+ros::Subscriber < std_msgs::Int32 > right_servo_ros("right_servo", &rightServoCb);
+
+
+
+
+
 
 std_msgs::Empty start_message;
 ros::Publisher start_pub("start_match", &start_message);
@@ -650,6 +675,9 @@ void setup()
     pinMode(7, OUTPUT);
     digitalWrite(7, HIGH);
 
+    right_servo.attach(32);
+    left_servo.attach(34);
+
     nh.initNode();
     broadcaster.init(nh);
 
@@ -661,6 +689,9 @@ void setup()
     nh.subscribe(delta_ros);
     
     nh.subscribe(ros_color);
+
+    nh.subscribe(left_servo_ros);
+    nh.subscribe(right_servo_ros);
     
     nh.advertise(start_pub);
     
