@@ -1,3 +1,4 @@
+/* vim: set filetype=cpp: */
 /* 
  *  Planar Odometry 
  */
@@ -17,6 +18,7 @@
 #include <geometry_msgs/PoseArray.h>
 
 //#include <common_smart_nav/ArduGoal.h>
+#include <Servo.h>
 
 
 #include <stdio.h>
@@ -40,9 +42,9 @@ void delay_ms(uint16_t millis)
 /***********/
 #define TICK_PER_MM_LEFT 	(18.6256756)
 #define TICK_PER_MM_RIGHT 	(18.6256756)
-#define TICK_PER_M_LEFT 	(18145.6756)//(18205.6756)
-#define TICK_PER_M_RIGHT 	(18145.6756)//(18205.6756)
-#define DIAMETER 	        0.29164 //0.2951                       // Distance between the 2 wheels
+#define TICK_PER_M_LEFT 	(17900.00)//(18145.6756)//(18205.6756)
+#define TICK_PER_M_RIGHT 	(17900.00)//(18145.6756)//(18205.6756)
+#define DIAMETER 	        0.29310//0.29164 //0.2951                       // Distance between the 2 wheels
 
 #define DISTANCE_REAR_WHEELS    0.120
 
@@ -76,15 +78,23 @@ void delay_ms(uint16_t millis)
 #define WAITING_BEGIN 		2
 #define ERROR 			3
 
-#define ALPHA_MAX_SPEED         8000//13000//3000//13000 
-#define ALPHA_MAX_ACCEL         800//300//800
-#define ALPHA_MAX_DECEL         1600//500//1600 
-#define DELTA_MAX_SPEED         16000//23000//4000//23000  
-#define DELTA_MAX_ACCEL         1000//300//1000     
-#define DELTA_MAX_DECEL         2200//600//2200 
+//#define ALPHA_MAX_SPEED         3000//8000//13000//3000//13000 
+//#define ALPHA_MAX_ACCEL         800//300//800
+//#define ALPHA_MAX_DECEL         1600//500//1600 
+//#define DELTA_MAX_SPEED         5000//16000//23000//4000//23000  
+//#define DELTA_MAX_ACCEL         1000//300//1000     
+//#define DELTA_MAX_DECEL         2200//600//2200 
+int ALPHA_MAX_SPEED = 3000;
+int ALPHA_MAX_ACCEL = 800;
+int ALPHA_MAX_DECEL = 1600;
+int DELTA_MAX_SPEED = 5000;
+int DELTA_MAX_ACCEL = 1000;
+int DELTA_MAX_DECEL = 2200;
+
 
 //#define PATH_FOLLOWING          1
-
+#define FORWARD                 0
+#define REVERSE                 1
 
 #define LEFT_REAR_SENSOR        43
 #define RIGHT_REAR_SENSOR       42
@@ -197,9 +207,15 @@ uint8_t cpt_asserv = 0;
 int alpha_and_theta = 0;
 int last_goal = 0;
 double desired_last_theta = 0;
+int reverse_mode = 0;
 
 double ticks_per_m = TOTAL_TICKS / WHEEL_PERIMETER;
 double m_per_tick = WHEEL_PERIMETER / TOTAL_TICKS;
+
+
+Servo left_servo;  // create servo object to control a servo
+Servo right_servo;  // create servo object to control a servo
+
 
 double ticks_per_rad = (TOTAL_TICKS / TURN_PERIMETER) / TWOPI;
 double rad_per_tick = 1 / ticks_per_rad;
@@ -304,6 +320,7 @@ ros::Subscriber < geometry_msgs::Pose2D > pose_sub("indomptable_goal",
 //void positionCb(const common_smart_nav::ArduGoal & goal_msg)
 void positionCb(const geometry_msgs::Pose2D & goal_msg)
 {
+    reverse_mode = FORWARD;
     goal.x = goal_msg.x;
     goal.y = goal_msg.y;
     if( goal_msg.theta > 9999 ) {
@@ -324,6 +341,27 @@ void positionCb(const geometry_msgs::Pose2D & goal_msg)
 //                                                   &positionCb);
 ros::Subscriber < geometry_msgs::Pose2D > pose_sub("ardugoal_out",
                                                    &positionCb);
+
+void positionrearCb(const geometry_msgs::Pose2D & goal_msg)
+{
+    reverse_mode = REVERSE;
+    goal.x = goal_msg.x;
+    goal.y = goal_msg.y;
+    if( goal_msg.theta > 9999 ) {
+        desired_last_theta = 0;
+        last_goal = 0;
+    }
+    else {
+        desired_last_theta = -goal_msg.theta;
+        last_goal = 1;
+    }
+
+    goto_xy_back(goal_msg.x, goal_msg.y);
+    //last_goal = goal_msg.last;
+    alpha_and_theta = 1;
+}
+ros::Subscriber < geometry_msgs::Pose2D > poserear_sub("ardugoalrear_out",
+                                                   &positionrearCb);
 
 
 /*
@@ -392,6 +430,20 @@ void colorCb(const std_msgs::Int32 & msg)
 }
 
 ros::Subscriber < std_msgs::Int32 > ros_color("color", &colorCb);
+
+
+void leftServoCb(const std_msgs::Int32 & msg)
+{ 
+  left_servo.write(msg.data);
+}
+ros::Subscriber < std_msgs::Int32 > left_servo_ros("left_servo", &leftServoCb);
+
+void rightServoCb(const std_msgs::Int32 & msg)
+{ 
+  right_servo.write(msg.data);
+}
+ros::Subscriber < std_msgs::Int32 > right_servo_ros("right_servo", &rightServoCb);
+
 
 std_msgs::Empty start_message;
 ros::Publisher start_pub("start_match", &start_message);
@@ -594,13 +646,13 @@ void setup()
     //write_RoboClaw_speed_M1M2(128, 0, 0);
 
     //Serial2.print(170, BYTE); // Init baudrate of Sabertooth
-
+/*
     init_motors();              // Init motors
     init_Robot(&maximus);       // Init robot status
 
     init_Command(&bot_command_delta);   // Init robot command
     init_Command(&bot_command_alpha);   // Init robot command
-
+*/
     // Global enable interrupts
     sei();
 
@@ -619,17 +671,37 @@ void setup()
     pinMode(7, OUTPUT);
     digitalWrite(7, HIGH);
 
+    right_servo.attach(32);
+    left_servo.attach(34);
+
     nh.initNode();
+
+    
     broadcaster.init(nh);
 
     nh.subscribe(pose_sub);
+    nh.subscribe(poserear_sub);
 //    nh.subscribe(subspeed);
     nh.subscribe(alpha_ros);
     nh.subscribe(delta_ros);
     
     nh.subscribe(ros_color);
     
+    nh.subscribe(left_servo_ros);
+    nh.subscribe(right_servo_ros);
+    
     nh.advertise(start_pub);
+    
+    while(!nh.connected()) {
+        nh.spinOnce();
+    }
+
+
+    init_motors();              // Init motors
+    init_Robot(&maximus);       // Init robot status
+
+    init_Command(&bot_command_delta);   // Init robot command
+    init_Command(&bot_command_alpha);   // Init robot command
     
 /*
     // Disable motion control
@@ -1441,7 +1513,7 @@ else {
 
     // PID distance
     if ((bot_command_alpha.state == WAITING_BEGIN) || (bot_command_alpha.state == PROCESSING_COMMAND)) {        // If alpha motor have not finished its movement 
-        double ang = angle_coord(&maximus, goal.x, goal.y) * RAD2DEG;
+        double ang = angle_coord(&maximus, goal.x, goal.y, reverse_mode) * RAD2DEG;
         if (abs(ang) > 3
             && (bot_command_alpha.state == PROCESSING_COMMAND))
             set_new_command(&bot_command_alpha, ang);
@@ -1449,7 +1521,7 @@ else {
         alpha_motor.des_speed =
             compute_position_PID(&bot_command_alpha, &alpha_motor);
 
-        double dist = distance_coord(&maximus, goal.x, goal.y);
+        double dist = distance_coord(&maximus, goal.x, goal.y, reverse_mode);
         //double max_possible_speed = 1050000 * dist / ang;
         //double max_possible_speed = 105000 * abs(dist) / abs(ang);      //35000
         double max_possible_speed = 625000 * abs(dist) / abs(ang);      //35000
@@ -1461,7 +1533,7 @@ else {
         prev_bot_command_delta.state = WAITING_BEGIN;
     } else {
         if ((prev_bot_command_delta.state == WAITING_BEGIN)) {
-            double dist = distance_coord(&maximus, goal.x, goal.y);
+            double dist = distance_coord(&maximus, goal.x, goal.y, reverse_mode);
 
             delta_motor.max_speed = DELTA_MAX_SPEED;
             set_new_command(&bot_command_delta, dist);
@@ -1573,16 +1645,19 @@ long compute_position_PID(struct RobotCommand *cmd,
 }
 
 // Compute the distance to do to go to (x, y)
-double distance_coord(struct robot *my_robot, double x1, double y1)
+double distance_coord(struct robot *my_robot, double x1, double y1, int reverse)
 {
     double x = 0;
     x = sqrt(pow(fabs(x1 - my_robot->pos_X), 2) +
              pow(fabs(y1 - my_robot->pos_Y), 2));
+
+    if(reverse == 1)
+      x = -x;
     return x;
 }
 
 // Compute the angle to do to go to (x, y)
-double angle_coord(struct robot *my_robot, double x1, double y1)
+double angle_coord(struct robot *my_robot, double x1, double y1, int reverse)
 {
     double angletodo = 0;
     if ((x1 < my_robot->pos_X) && (y1 < my_robot->pos_Y)) {
@@ -1617,6 +1692,13 @@ double angle_coord(struct robot *my_robot, double x1, double y1)
     if (angletodo < -PI)
         angletodo = 2 * PI + angletodo;
 
+    if(reverse == 1){
+      if (angletodo < 0)
+        angletodo = (angletodo + PI);
+      else
+        angletodo = (angletodo - PI);
+    }
+
     return angletodo;
 }
 
@@ -1624,10 +1706,10 @@ void goto_xy(double x, double y)
 {
     double ang, dist;
 
-    ang = angle_coord(&maximus, x, y) * RAD2DEG;
+    ang = angle_coord(&maximus, x, y, FORWARD) * RAD2DEG;
     set_new_command(&bot_command_alpha, ang);
 
-    dist = distance_coord(&maximus, x, y);
+    dist = distance_coord(&maximus, x, y, FORWARD);
     set_new_command(&prev_bot_command_delta, dist);
     bot_command_delta.state = WAITING_BEGIN;
 }
@@ -1636,14 +1718,10 @@ void goto_xy_back(double x, double y)
 {
     double ang, dist;
 
-    ang = angle_coord(&maximus, x, y);
-    if (ang < 0)
-        ang = (ang + PI) * RAD2DEG;
-    else
-        ang = (ang - PI) * RAD2DEG;
+    ang = angle_coord(&maximus, x, y, REVERSE) * RAD2DEG;
     set_new_command(&bot_command_alpha, ang);
 
-    dist = -distance_coord(&maximus, x, y);
+    dist = distance_coord(&maximus, x, y, REVERSE);
     set_new_command(&prev_bot_command_delta, dist);
     bot_command_delta.state = WAITING_BEGIN;
 }
