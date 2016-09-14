@@ -2,12 +2,15 @@
 
 <launch>
 
-  <node pkg="rosserial_python" type="serial_node.py" respawn="false" name="GROS_rosserial_motion_control" output="screen" args="/dev/ttyODOM">
+  <node pkg="rosserial_python" type="serial_node.py" respawn="false" name="PETIT_rosserial_motion_control" output="screen" args="/dev/ttyPUMP">
         <remap from="/color" to="/GENERAL/color" />
+        <remap from="/start_match" to="/GENERAL/start_game" />
         <remap from="/alpha_ros" to="/GROS/alpha_ardu" />
         <remap from="/delta_ros" to="/GROS/delta_ardu" />
         <remap from="/ardugoal_out" to="/GROS/ardugoal" />
-        <remap from="/start_match" to="/GENERAL/start_game" />
+        <remap from="/ardugoalrear_out" to="/GROS/ardugoal_rear" />
+        <remap from="/left_servo" to="/GROS/left_servo" />
+        <remap from="/right_servo" to="/GROS/right_servo" />
   </node>
 
 <!--

@@ -89,8 +89,11 @@ void delay_ms(uint16_t millis)
 #define FORWARD                 0
 #define REVERSE                 1
 
-#define LEFT_REAR_SENSOR        43
-#define RIGHT_REAR_SENSOR       42
+#define LEFT_REAR_SENSOR        38
+#define RIGHT_REAR_SENSOR       40
+
+#define LEFT_SERVO		34
+#define RIGHT_SERVO		32
 
 #define START_PIN               40
 
@@ -675,8 +678,8 @@ void setup()
     pinMode(7, OUTPUT);
     digitalWrite(7, HIGH);
 
-    right_servo.attach(32);
-    left_servo.attach(34);
+    right_servo.attach(RIGHT_SERVO);
+    left_servo.attach(LEFT_SERVO);
 
     nh.initNode();
     broadcaster.init(nh);
@@ -882,7 +885,7 @@ void init_motors(void)
     alpha_motor.last_error = 0;
     alpha_motor.error_sum = 0;
     alpha_motor.kP = 1200;//50; //100; 
-    alpha_motor.kI = 100;
+    alpha_motor.kI = 50;
     alpha_motor.kD = 8000;//88; //166; 
     alpha_motor.accel = ALPHA_MAX_ACCEL;
     alpha_motor.decel = ALPHA_MAX_DECEL;
@@ -895,9 +898,9 @@ void init_motors(void)
     delta_motor.cur_speed = 0;
     delta_motor.last_error = 0;
     delta_motor.error_sum = 0;
-    delta_motor.kP = 60000;       //600;
+    delta_motor.kP = 5000;       //600;
     delta_motor.kI = 0;
-    delta_motor.kD = 7000;       //200;
+    delta_motor.kD = 4000;       //200;
     delta_motor.accel = DELTA_MAX_ACCEL;
     delta_motor.decel = DELTA_MAX_DECEL;
     delta_motor.max_speed = DELTA_MAX_SPEED;
@@ -1346,9 +1349,9 @@ inline void move_motors(char type)
                                   -(delta_motor.des_speed +
                                   alpha_motor.des_speed));*/
         write_RoboClaw_speed_M1M2(129,
-                                  -(-delta_motor.des_speed +
+                                  (-delta_motor.des_speed -
                                   alpha_motor.des_speed),
-                                  -(-delta_motor.des_speed -
+                                  (-delta_motor.des_speed +
                                   alpha_motor.des_speed)
                                   );
     //write_SaberTooth_speed_M1M2(130, delta_motor.des_speed - alpha_motor.des_speed, delta_motor.des_speed + alpha_motor.des_speed);
