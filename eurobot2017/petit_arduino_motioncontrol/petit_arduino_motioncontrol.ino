@@ -42,11 +42,11 @@ void delay_ms(uint16_t millis)
 /***********/
 #define TICK_PER_MM_LEFT 	(18.6256756)
 #define TICK_PER_MM_RIGHT 	(18.6256756)
-#define TICK_PER_M_LEFT 	(17200.0)//(18205.6756)
-#define TICK_PER_M_RIGHT 	(17200.0)//(18205.6756)
-#define DIAMETER 	        0.1980 //0.2951                       // Distance between the 2 wheels
+#define TICK_PER_M_LEFT 	(17370.0)//(18205.6756)
+#define TICK_PER_M_RIGHT 	(17370.0)//(18205.6756)
+#define DIAMETER 	        0.1940 //0.2951                       // Distance between the 2 wheels
 
-#define DISTANCE_REAR_WHEELS    0.120
+#define DISTANCE_REAR_WHEELS    0.055
 
 #define CORFUGE             1.2
 
@@ -78,25 +78,25 @@ void delay_ms(uint16_t millis)
 #define WAITING_BEGIN 		2
 #define ERROR 			3
 
-#define ALPHA_MAX_SPEED         20000//13000//3000//13000 
+#define ALPHA_MAX_SPEED         30000//13000//3000//13000 
 #define ALPHA_MAX_ACCEL         32000//300//800
 #define ALPHA_MAX_DECEL         64000//500//1600 
-#define ALPHA_MIN_SPEED         16000 
+#define ALPHA_MIN_SPEED         8000 
 #define ALPHA_MIN_ERROR_ZERO    4 
-#define DELTA_MAX_SPEED         80000//23000//4000//23000  
+#define DELTA_MAX_SPEED         70000//23000//4000//23000  
 #define DELTA_MAX_ACCEL         40000//300//1000     
 #define DELTA_MAX_DECEL         88000//600//2200 
 #define DELTA_MIN_SPEED         20000  
 #define DELTA_MIN_ERROR_ZERO    2  
 
-#define ALPHA_P         	0//200//400//1200
-#define ALPHA_I         	0//10//25//50
-#define ALPHA_D         	0//500//2000//8000
+#define ALPHA_P         	400//200//400//1200
+#define ALPHA_I         	10//25//50
+#define ALPHA_D         	1000//500//2000//8000
 #define DELTA_P         	1000//1200//5000
 #define DELTA_I         	0
 #define DELTA_D         	1000//2000//4000
 
-#define POWER_TO_RIGHT          1.12
+#define POWER_TO_RIGHT          1.25
 
 //#define PATH_FOLLOWING          1
 #define FORWARD                 0
@@ -680,6 +680,8 @@ void setup()
 
     pinMode(LEFT_REAR_SENSOR, INPUT);
     pinMode(RIGHT_REAR_SENSOR, INPUT);
+    digitalWrite(LEFT_REAR_SENSOR, HIGH);
+    digitalWrite(RIGHT_REAR_SENSOR, HIGH); 
     pinMode(START_PIN, INPUT);
 
 
@@ -744,7 +746,10 @@ void setup()
     
     // auto init
     color = 1;//-1;
-    //init_first_position(&maximus);  
+    //init_first_position(&maximus); 
+    left_servo.write(120); 
+    bad_init_position(&maximus);
+    left_servo.write(60);
 
     // Disable motion control
     motion_control_ON = 0;
@@ -928,6 +933,37 @@ void init_motors(void)
     delta_motor.min_speed       = DELTA_MIN_SPEED;
     delta_motor.min_error_zero  = DELTA_MIN_ERROR_ZERO;
     delta_motor.distance 	= 0.0;
+}
+
+void bad_init_position(struct robot *my_robot)
+{
+    // Put the robot in low speed mode
+    delta_motor.max_speed = 40000;
+    alpha_motor.max_speed = 5000;
+    // go back to touch the wall
+    set_new_command(&bot_command_alpha, 0);
+    set_new_command(&bot_command_delta, -1000);
+    
+    while ((digitalRead(LEFT_REAR_SENSOR) == 1) || (digitalRead(RIGHT_REAR_SENSOR) == 1)) {
+        delay(100);
+    }
+    
+    // Set the Y position and theta
+    my_robot->theta = 0;
+    my_robot->pos_Y = 0.000 + DISTANCE_REAR_WHEELS;
+    my_robot->pos_X = 0.0 + DISTANCE_REAR_WHEELS; 
+    
+    set_new_command(&bot_command_alpha, 0);
+    set_new_command(&bot_command_delta, 0);
+    
+    // Set the speed to the maximum
+    delta_motor.max_speed = DELTA_MAX_SPEED;
+    alpha_motor.max_speed = ALPHA_MAX_SPEED;
+    
+    goal.x = maximus.pos_X;
+    goal.y = maximus.pos_Y;
+
+    
 }
 
 void init_first_position(struct robot *my_robot)
