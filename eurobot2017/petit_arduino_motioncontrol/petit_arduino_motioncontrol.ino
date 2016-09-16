@@ -44,7 +44,7 @@ void delay_ms(uint16_t millis)
 #define TICK_PER_MM_RIGHT 	(18.6256756)
 #define TICK_PER_M_LEFT 	(17200.0)//(18205.6756)
 #define TICK_PER_M_RIGHT 	(17200.0)//(18205.6756)
-#define DIAMETER 	        0.2000 //0.2951                       // Distance between the 2 wheels
+#define DIAMETER 	        0.1980 //0.2951                       // Distance between the 2 wheels
 
 #define DISTANCE_REAR_WHEELS    0.120
 
@@ -78,12 +78,25 @@ void delay_ms(uint16_t millis)
 #define WAITING_BEGIN 		2
 #define ERROR 			3
 
-#define ALPHA_MAX_SPEED         40000//13000//3000//13000 
+#define ALPHA_MAX_SPEED         20000//13000//3000//13000 
 #define ALPHA_MAX_ACCEL         32000//300//800
 #define ALPHA_MAX_DECEL         64000//500//1600 
+#define ALPHA_MIN_SPEED         16000 
+#define ALPHA_MIN_ERROR_ZERO    4 
 #define DELTA_MAX_SPEED         80000//23000//4000//23000  
 #define DELTA_MAX_ACCEL         40000//300//1000     
 #define DELTA_MAX_DECEL         88000//600//2200 
+#define DELTA_MIN_SPEED         20000  
+#define DELTA_MIN_ERROR_ZERO    2  
+
+#define ALPHA_P         	0//200//400//1200
+#define ALPHA_I         	0//10//25//50
+#define ALPHA_D         	0//500//2000//8000
+#define DELTA_P         	1000//1200//5000
+#define DELTA_I         	0
+#define DELTA_D         	1000//2000//4000
+
+#define POWER_TO_RIGHT          1.12
 
 //#define PATH_FOLLOWING          1
 #define FORWARD                 0
@@ -112,6 +125,8 @@ struct motor {
     signed long accel;
     signed long decel;
     signed long max_speed;
+    signed long min_speed;
+    signed long min_error_zero;
     float distance;
 };
 
@@ -862,6 +877,8 @@ void init_motors(void)
     left_motor.accel = 5;
     left_motor.decel = 5;
     left_motor.max_speed = 30;
+    left_motor.min_speed 	= 0;
+    left_motor.min_error_zero 	= 0;
     left_motor.distance = 0.0;
 
     /* Right motor initialization */
@@ -876,35 +893,41 @@ void init_motors(void)
     right_motor.accel = 5;
     right_motor.decel = 5;
     right_motor.max_speed = 30;
+    right_motor.min_speed 	= 0;
+    right_motor.min_error_zero 	= 0;
     right_motor.distance = 0.0;
 
     /* Alpha motor initialization */
-    alpha_motor.type = ALPHA_MOTOR;
-    alpha_motor.des_speed = 0;
-    alpha_motor.cur_speed = 0;
-    alpha_motor.last_error = 0;
-    alpha_motor.error_sum = 0;
-    alpha_motor.kP = 1200;//50; //100; 
-    alpha_motor.kI = 50;
-    alpha_motor.kD = 8000;//88; //166; 
-    alpha_motor.accel = ALPHA_MAX_ACCEL;
-    alpha_motor.decel = ALPHA_MAX_DECEL;
-    alpha_motor.max_speed = ALPHA_MAX_SPEED;
-    alpha_motor.distance = 0.0;
+    alpha_motor.type 		= ALPHA_MOTOR;
+    alpha_motor.des_speed 	= 0;
+    alpha_motor.cur_speed 	= 0;
+    alpha_motor.last_error 	= 0;
+    alpha_motor.error_sum 	= 0;
+    alpha_motor.kP 		= ALPHA_P; 
+    alpha_motor.kI 		= ALPHA_I;
+    alpha_motor.kD 		= ALPHA_D; 
+    alpha_motor.accel 		= ALPHA_MAX_ACCEL;
+    alpha_motor.decel 		= ALPHA_MAX_DECEL;
+    alpha_motor.max_speed 	= ALPHA_MAX_SPEED;
+    alpha_motor.min_speed 	= ALPHA_MIN_SPEED;
+    alpha_motor.min_error_zero 	= ALPHA_MIN_ERROR_ZERO; 
+    alpha_motor.distance 	= 0.0;
 
     /* Delta motor initialization */
-    delta_motor.type = DELTA_MOTOR;
-    delta_motor.des_speed = 0;
-    delta_motor.cur_speed = 0;
-    delta_motor.last_error = 0;
-    delta_motor.error_sum = 0;
-    delta_motor.kP = 5000;       //600;
-    delta_motor.kI = 0;
-    delta_motor.kD = 4000;       //200;
-    delta_motor.accel = DELTA_MAX_ACCEL;
-    delta_motor.decel = DELTA_MAX_DECEL;
-    delta_motor.max_speed = DELTA_MAX_SPEED;
-    delta_motor.distance = 0.0;
+    delta_motor.type 		= DELTA_MOTOR;
+    delta_motor.des_speed 	= 0;
+    delta_motor.cur_speed 	= 0;
+    delta_motor.last_error 	= 0;
+    delta_motor.error_sum 	= 0;
+    delta_motor.kP 		= DELTA_P;
+    delta_motor.kI 		= DELTA_I;
+    delta_motor.kD 		= DELTA_D;
+    delta_motor.accel 		= DELTA_MAX_ACCEL;
+    delta_motor.decel 		= DELTA_MAX_DECEL;
+    delta_motor.max_speed 	= DELTA_MAX_SPEED;
+    delta_motor.min_speed       = DELTA_MIN_SPEED;
+    delta_motor.min_error_zero  = DELTA_MIN_ERROR_ZERO;
+    delta_motor.distance 	= 0.0;
 }
 
 void init_first_position(struct robot *my_robot)
@@ -1349,8 +1372,8 @@ inline void move_motors(char type)
                                   -(delta_motor.des_speed +
                                   alpha_motor.des_speed));*/
         write_RoboClaw_speed_M1M2(129,
-                                  (-delta_motor.des_speed -
-                                  alpha_motor.des_speed),
+                                  (signed long)(POWER_TO_RIGHT*(-delta_motor.des_speed -
+                                  alpha_motor.des_speed)),
                                   (-delta_motor.des_speed +
                                   alpha_motor.des_speed)
                                   );
@@ -1661,17 +1684,38 @@ long compute_position_PID(struct RobotCommand *cmd,
     if (used_motor->type == ALPHA_MOTOR) {
 //        if ((cmd->state == PROCESSING_COMMAND) && (abs(err) < 3)
 //            && (abs(errDif) < 3)) {                        // 2 before
-        if ((cmd->state == PROCESSING_COMMAND) && (abs(err) < 10)) {    // 2 before
+        if ((cmd->state == PROCESSING_COMMAND) && (abs(err) < 5)) {    // 2 before
 
             cmd->state = COMMAND_DONE;
         }
     } else {
 //        if ((cmd->state == PROCESSING_COMMAND) && (abs(err) < 0.006)
 //            && (abs(errDif) < 0.005)) {                        // 2 before
-        if ((cmd->state == PROCESSING_COMMAND) && (abs(err) < 10)) {    // 2 before
+        if ((cmd->state == PROCESSING_COMMAND) && (abs(err) < 5)) {    // 2 before
             cmd->state = COMMAND_DONE;
             //pub_move_done.publish(&movement_done);
         }
+    }
+
+    if(abs(err) > used_motor->min_error_zero)
+    {
+        if( (abs(tmp) < used_motor->min_speed) && (abs(tmp) > 2) )
+        {
+        if(tmp > 0)
+        {
+            //tmp = tmp + used_motor->min_speed;
+            tmp = used_motor->min_speed;
+        }
+        else
+        {
+            //tmp = tmp - used_motor->min_speed;
+            tmp = -used_motor->min_speed;
+        }
+        }
+    }
+    else
+    {
+        tmp = 0;
     }
 
     return tmp;
