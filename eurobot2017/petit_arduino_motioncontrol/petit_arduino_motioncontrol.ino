@@ -42,9 +42,9 @@ void delay_ms(uint16_t millis)
 /***********/
 #define TICK_PER_MM_LEFT 	(18.6256756)
 #define TICK_PER_MM_RIGHT 	(18.6256756)
-#define TICK_PER_M_LEFT 	(17370.0)//(18205.6756)
-#define TICK_PER_M_RIGHT 	(17370.0)//(18205.6756)
-#define DIAMETER 	        0.1970 //0.2951                       // Distance between the 2 wheels
+#define TICK_PER_M_LEFT 	(17270.0)//(18205.6756)
+#define TICK_PER_M_RIGHT 	(17270.0)//(18205.6756)
+#define DIAMETER 	        0.19814//0.1970 //0.2951                       // Distance between the 2 wheels
 
 #define DISTANCE_REAR_WHEELS    0.055
 
@@ -78,21 +78,21 @@ void delay_ms(uint16_t millis)
 #define WAITING_BEGIN 		2
 #define ERROR 			3
 
-#define ALPHA_MAX_SPEED         50000//13000//3000//13000 
-#define ALPHA_MAX_ACCEL         32000//300//800
+volatile signed long ALPHA_MAX_SPEED    =     50000;//13000//3000//13000 
+#define ALPHA_MAX_ACCEL         30000//32000//300//800
 #define ALPHA_MAX_DECEL         64000//500//1600 
-#define ALPHA_MIN_SPEED         8000 
+#define ALPHA_MIN_SPEED         6000 
 #define ALPHA_MIN_ERROR_ZERO    4 
-#define DELTA_MAX_SPEED         70000//23000//4000//23000  
+volatile signed long DELTA_MAX_SPEED    =     70000;//23000//4000//23000  
 #define DELTA_MAX_ACCEL         40000//300//1000     
 #define DELTA_MAX_DECEL         88000//600//2200 
-#define DELTA_MIN_SPEED         5000//20000  
+#define DELTA_MIN_SPEED         7000//20000  
 #define DELTA_MIN_ERROR_ZERO    2  
 
-#define ALPHA_P         	400//200//400//1200
-#define ALPHA_I         	10//25//50
-#define ALPHA_D         	1000//500//2000//8000
-#define DELTA_P         	1000//1200//5000
+#define ALPHA_P         	200//200//400//1200
+#define ALPHA_I         	0//25//50
+#define ALPHA_D         	100//500//2000//8000
+#define DELTA_P         	2000//1200//5000
 #define DELTA_I         	0
 #define DELTA_D         	1000//2000//4000
 
@@ -462,7 +462,23 @@ void calibrateCb(const std_msgs::Int32 & msg)
 }
 ros::Subscriber < std_msgs::Int32 > calibrate_ros("calibrate", &calibrateCb);
 
+void setMaxLinearSpeedCb(const std_msgs::Int32 & msg)
+{
+  if(msg.data < 0)
+    delta_motor.max_speed = DELTA_MAX_SPEED = 70000;
+  else
+    delta_motor.max_speed = DELTA_MAX_SPEED = msg.data;//delta_motor.max_speed = msg.data;  
+}
+ros::Subscriber < std_msgs::Int32 > setMaxLinearSpeed_ros("setMaxLinearSpeed", &setMaxLinearSpeedCb);
 
+void setMaxAngularSpeedCb(const std_msgs::Int32 & msg)
+{
+  if(msg.data < 0)
+    alpha_motor.max_speed = ALPHA_MAX_SPEED = 50000;
+  else
+    alpha_motor.max_speed = ALPHA_MAX_SPEED = msg.data;  
+}
+ros::Subscriber < std_msgs::Int32 > setMaxAngularSpeed_ros("setMaxAngularSpeed", &setMaxAngularSpeedCb);
 
 
 std_msgs::Empty start_message;
@@ -719,6 +735,9 @@ void setup()
     
     nh.subscribe(calibrate_ros);
     
+    nh.subscribe(setMaxLinearSpeed_ros);
+    nh.subscribe(setMaxAngularSpeed_ros);
+    
     nh.advertise(start_pub);
     
 /*
@@ -955,6 +974,8 @@ void bad_init_position(struct robot *my_robot)
         delay(100);
     }
     
+    delay(500);
+    
     // Set the Y position and theta
     my_robot->theta = 0;
     my_robot->pos_Y = 0.000 + DISTANCE_REAR_WHEELS;
@@ -975,6 +996,8 @@ void bad_init_position(struct robot *my_robot)
     
     goal.x = maximus.pos_X;
     goal.y = maximus.pos_Y;
+    
+    alpha_and_theta = 1;
 
     
 }
@@ -1038,6 +1061,8 @@ void calibrate_x_min(struct robot *my_robot)
         nh.spinOnce();
     }
     
+    delay(300);
+    
     // Set the Y position and theta
     my_robot->theta = 0;
     //my_robot->pos_Y = 0.000 + DISTANCE_REAR_WHEELS;
@@ -1085,6 +1110,7 @@ void calibrate_x_min(struct robot *my_robot)
     goal.x = maximus.pos_X;
     goal.y = maximus.pos_Y;
     
+    alpha_and_theta = 1;
     
 }
 
