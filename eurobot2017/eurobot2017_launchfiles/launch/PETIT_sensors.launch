@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+
+<launch>
+  <master auto="start"/>
+
+  <!-- LASER NODE -->
+  <node pkg="hokuyo_node" type="hokuyo_node" name="PETIT_hokuyo" output="screen">
+    <param name="port" value="/dev/ttyHOKUYO" />
+    <param name="frame_id" value="petit_nav_laser_link" />
+    <param name="min_ang" value="-2.086214" />
+    <param name="max_ang" value="2.092350" />
+    <param name="skip" value="0" />
+    <param name="cluster" value="2" />
+
+    <remap from="/scan" to="/PETIT/nav_laser" />
+  </node>
+
+  <!-- ARDUINO LOW LEVEL MOTION CONTROL 
+  <node pkg="rosserial_python" type="serial_node.py" respawn="false" name="GROS_rosserial_motion_control" output="screen" args="/dev/ttyODOM">
+
+        <remap from="/color" to="/GENERAL/color" />
+        <remap from="/alpha_ros" to="/GROS/alpha_ardu" />
+        <remap from="/delta_ros" to="/GROS/delta_ardu" />
+        <remap from="/ardugoal_out" to="/GROS/ardugoal" />
+        <remap from="/ardugoalrear_out" to="/GROS/ardugoal_rear" />
+        <remap from="/start_match" to="/GENERAL/start_game" />
+        <remap from="/left_servo" to="/GROS/left_servo" />
+        <remap from="/right_servo" to="/GROS/right_servo" />
+  </node>
+
+
+  <node pkg="common_servo_converter" type="common_servo_converter" respawn="true" name="standard_servo_base_left" output="screen">
+    	<param name="inverted" type="int" value="0" />
+    	<param name="offset" type="int" value="0" />
+
+        <remap from="/input" to="/GROS/BASE/left_servo" />
+        <remap from="/output" to="/GROS/left_servo" />
+  </node>
+
+  <node pkg="common_servo_converter" type="common_servo_converter" respawn="true" name="standard_servo_base_right" output="screen">
+        <param name="inverted" type="int" value="0" />
+        <param name="offset" type="int" value="0" />
+
+        <remap from="/input" to="/GROS/BASE/right_servo" />
+        <remap from="/output" to="/GROS/right_servo" />
+  </node>
+-->
+
+
+</launch>

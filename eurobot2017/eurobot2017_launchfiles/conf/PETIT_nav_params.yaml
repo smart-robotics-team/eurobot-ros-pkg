@@ -1,0 +1,59 @@
+PETIT_costmap:
+  global_frame: /world
+  robot_base_frame: /base_link
+  transform_tolerance: 0.6
+  update_frequency: 4.0
+  publish_frequency: 0.5
+  max_obstacle_height: 0.5
+  obstacle_range: 3.0
+  raytrace_range: 3.5
+  #footprint: [[-0.1, -0.1], [-0.1, 0.1], [0.1, 0.1], [0.1, -0.1]]
+  robot_radius: 0.20
+  static_map: false
+  resolution: 0.02
+  map_type: costmap
+  rolling_window: false
+  width: 4.0
+  height: 3.0
+  origin_x: -2.0
+  origin_y: -0.5
+
+#  static_map:
+#    map_topic: /GROS/map
+#    unknown_cost_value: 50
+#    lethal_cost_threshold: 100
+
+  obstacles:
+    observation_sources: fixed_obstacles #PETIT_nav_laser
+    PETIT_nav_laser: {sensor_frame: /petit_nav_laser_link, data_type: LaserScan, topic: /PETIT/nav_laser, marking: true, clearing: true, obstacle_range: 3.0}
+    fixed_obstacles: {sensor_frame: /world, data_type: PointCloud, topic: /GROS/fixed_obstacles, marking: true, clearing: false, obstacle_range: 3.0}
+    track_unknown_space: false
+
+  inflater:
+    robot_radius: 0.20
+    inflation_radius: 0.25
+    cost_scaling_factor: 10.0
+
+  plugins:
+    - 
+      name: obstacles
+      type: "costmap_2d::ObstacleLayer"
+    - 
+      name: inflater
+      type: "costmap_2d::InflationLayer"
+#    - 
+#      name: static_map 
+#      type: "costmap_2d::StaticLayer"
+#   -
+#     name: footprint
+#     type: "costmap_2d::FootprintLayer"
+
+
+PETIT_planner:
+  allow_unknown: false
+  visualize_potential: false
+  global_frame: /world
+  robot_base_frame: /base_link
+  map_topic: /GROS/map
+
+
