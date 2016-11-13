@@ -772,9 +772,9 @@ void setup()
     // auto init
     color = 1;//-1;
     //init_first_position(&maximus); 
-    left_servo.write(120); 
+    left_servo.write(75); 
     bad_init_position(&maximus);
-    left_servo.write(60);
+    left_servo.write(95);
 
     // Disable motion control
     motion_control_ON = 0;
@@ -1764,7 +1764,8 @@ else {
         double dist = distance_coord(&maximus, goal.x, goal.y, reverse_mode);
         //double max_possible_speed = 1050000 * dist / ang;
         //double max_possible_speed = 105000 * abs(dist) / abs(ang);      //35000
-        double max_possible_speed = 625000 * abs(dist) / abs(ang);      //35000
+        //double max_possible_speed = 625000 * abs(dist) / abs(ang);      //35000
+        double max_possible_speed = 8000000 * abs(dist) / abs(ang);      //35000
         if (max_possible_speed < 70)
             max_possible_speed = 0;
         delta_motor.max_speed =

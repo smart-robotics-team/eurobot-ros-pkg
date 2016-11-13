@@ -3,6 +3,8 @@
 <launch>
   <master auto="start"/>
 
+  <node pkg="tf" type="static_transform_publisher" name="PETIT_navlaser_broadcaster" args="0.025 0 0 0 0 0 /base_link /petit_nav_laser_link 100" />
+
   <!-- LASER NODE -->
   <node pkg="hokuyo_node" type="hokuyo_node" name="PETIT_hokuyo" output="screen">
     <param name="port" value="/dev/ttyHOKUYO" />
@@ -12,7 +14,13 @@
     <param name="skip" value="0" />
     <param name="cluster" value="2" />
 
-    <remap from="/scan" to="/PETIT/nav_laser" />
+    <remap from="/scan" to="/PETIT/nav_laser_raw" />
+  </node>
+
+  <node pkg="laser_filters" type="scan_to_scan_filter_chain" name="PETIT_standard_laser_filter">
+    <rosparam command="load" file="$(find eurobot2017_launchfiles)/conf/petit_laser_config.yaml" />
+    <remap from="/scan" to="/PETIT/nav_laser_raw" />
+    <remap from="/scan_filtered" to="/PETIT/nav_laser" />
   </node>
 
   <!-- ARDUINO LOW LEVEL MOTION CONTROL 
