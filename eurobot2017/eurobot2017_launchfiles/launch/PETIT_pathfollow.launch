@@ -11,10 +11,11 @@
   <node pkg="tf" type="static_transform_publisher" name="GROS_worldodom_broadcaster" args="0 0 0 0 0 0 /world /odom 100" />
 
   <!-- Path planner / Costmap -->
-  <node pkg="common_smart_nav" type="pathplanner" respawn="false" name="GROS_pathplanner" output="screen">
+  <node pkg="common_smart_nav" type="pathplanner_global" respawn="false" name="GROS_pathplanner" output="screen">
     <param name="costmap_name" type="str" value="PETIT_costmap" />
     <param name="planner_name" type="str" value="PETIT_planner" />
     <param name="map_name" type="str" value="world" />
+    <param name="base_global_planner" value="global_planner/GlobalPlanner"/>
 
     <rosparam file="$(find eurobot2017_launchfiles)/conf/PETIT_nav_params.yaml" command="load" />
 
@@ -35,8 +36,8 @@
     <param name="map_name" type="str" value="world" />
     <param name="base_name" type="str" value="base_link" />
 
-    <param name="nb_step_skip" type="int" value="11" />
-    <param name="max_dist_skip" type="double" value="0.19" />
+    <param name="nb_step_skip" type="int" value="9" />
+    <param name="max_dist_skip" type="double" value="0.12" />
     <param name="max_speed_ang" type="double" value="0.12" />
     <param name="max_speed_lin" type="double" value="0.15" />
     <param name="Px" type="double" value="1.8" />

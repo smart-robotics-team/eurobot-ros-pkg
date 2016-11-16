@@ -89,7 +89,7 @@ volatile signed long DELTA_MAX_SPEED    =     70000;//23000//4000//23000
 #define DELTA_MIN_SPEED         7000//20000  
 #define DELTA_MIN_ERROR_ZERO    2  
 
-#define ALPHA_P         	200//200//400//1200
+#define ALPHA_P         	300//200//400//1200
 #define ALPHA_I         	0//25//50
 #define ALPHA_D         	100//500//2000//8000
 #define DELTA_P         	2000//1200//5000
@@ -1695,7 +1695,7 @@ inline void do_motion_control(void)
 
         double dist = distance_coord(&maximus, goal.x, goal.y, FORWARD);
         //double max_possible_speed = 1050000 * dist / ang;
-        double max_possible_speed = 700000 * dist / ang;
+        double max_possible_speed = 500000 * dist / ang;
         if (max_possible_speed < 200)
             max_possible_speed = 0;
         delta_motor.max_speed =
@@ -1765,7 +1765,7 @@ else {
         //double max_possible_speed = 1050000 * dist / ang;
         //double max_possible_speed = 105000 * abs(dist) / abs(ang);      //35000
         //double max_possible_speed = 625000 * abs(dist) / abs(ang);      //35000
-        double max_possible_speed = 8000000 * abs(dist) / abs(ang);      //35000
+        double max_possible_speed = 6000000 * abs(dist) / abs(ang);      //35000
         if (max_possible_speed < 70)
             max_possible_speed = 0;
         delta_motor.max_speed =
