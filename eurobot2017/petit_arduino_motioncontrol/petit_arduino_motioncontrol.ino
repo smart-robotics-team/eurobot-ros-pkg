@@ -89,9 +89,9 @@ volatile signed long DELTA_MAX_SPEED    =     70000;//23000//4000//23000
 #define DELTA_MIN_SPEED         7000//20000  
 #define DELTA_MIN_ERROR_ZERO    2  
 
-#define ALPHA_P         	300//200//400//1200
+#define ALPHA_P         	350//200//400//1200
 #define ALPHA_I         	0//25//50
-#define ALPHA_D         	100//500//2000//8000
+#define ALPHA_D         	200//500//2000//8000
 #define DELTA_P         	2000//1200//5000
 #define DELTA_I         	0
 #define DELTA_D         	1000//2000//4000
@@ -458,7 +458,23 @@ ros::Subscriber < std_msgs::Int32 > right_servo_ros("right_servo", &rightServoCb
 
 void calibrateCb(const std_msgs::Int32 & msg)
 {
-  calibrate_x_min(&maximus);
+  switch(msg.data) {
+    case 0:
+      calibrate_x_min(&maximus);
+      break;
+    case 1:
+      calibrate_y_min(&maximus);
+      break;
+    case 2:
+      calibrate_x_min(&maximus);
+      break;
+    case 3:
+      calibrate_x_min(&maximus);
+      break;
+    default:
+      calibrate_x_min(&maximus);
+      break;
+  }    
 }
 ros::Subscriber < std_msgs::Int32 > calibrate_ros("calibrate", &calibrateCb);
 
@@ -962,10 +978,58 @@ void init_motors(void)
 
 void bad_init_position(struct robot *my_robot)
 {
-    alpha_and_theta = 0;
+    int i = 0;
+    calibrate_x_min(my_robot);
+/*    alpha_and_theta = 0;
     // Put the robot in low speed mode
     delta_motor.max_speed = 40000;
-    alpha_motor.max_speed = 5000;
+    alpha_motor.max_speed = 50000;
+    
+    set_new_command(&bot_command_alpha, (PI / 2 * RAD2DEG));
+    set_new_command(&bot_command_delta, 0);
+    delay(5000);
+    */
+    calibrate_y_min(my_robot);
+    
+    alpha_and_theta = 0;
+    // Put the robot in low speed mode
+    delta_motor.max_speed = 4000;
+    alpha_motor.max_speed = 50000;
+    
+    double angletodo = (PI / 4)-maximus.theta;
+   
+    if (angletodo > PI)
+        angletodo = angletodo - 2 * PI;
+    if (angletodo < -PI)
+        angletodo = 2 * PI + angletodo;
+        
+    set_new_command(&bot_command_alpha, angletodo * RAD2DEG );
+    
+    for(i = 0; (i < 50) && (fabs((PI / 4)-maximus.theta)>0.035); i++) {
+        delay(50);
+        t.header.frame_id = odom;
+        t.child_frame_id = base_link;
+    
+        t.transform.translation.x = maximus.pos_X;
+        t.transform.translation.y = maximus.pos_Y;
+    
+        t.transform.rotation = tf::createQuaternionFromYaw(maximus.theta);
+        t.header.stamp = nh.now();
+    
+        broadcaster.sendTransform(t);
+        nh.spinOnce();
+    }
+    
+    // Set the speed to the maximum
+    delta_motor.max_speed = DELTA_MAX_SPEED;
+    alpha_motor.max_speed = ALPHA_MAX_SPEED;
+    
+    goal.x = maximus.pos_X;
+    goal.y = maximus.pos_Y;
+    
+    alpha_and_theta = 1;
+    
+    /*
     // go back to touch the wall
     set_new_command(&bot_command_alpha, 0);
     set_new_command(&bot_command_delta, -1000);
@@ -998,7 +1062,7 @@ void bad_init_position(struct robot *my_robot)
     goal.y = maximus.pos_Y;
     
     alpha_and_theta = 1;
-
+*/
     
 }
 
@@ -1007,7 +1071,7 @@ void calibrate_x_min(struct robot *my_robot)
     int i = 0;
     // Put the robot in low speed mode
     delta_motor.max_speed = 40000;
-    alpha_motor.max_speed = 30000;
+    alpha_motor.max_speed = 50000;
     // First : turn in the correct direction
     set_new_command(&bot_command_alpha, 0);
     set_new_command(&bot_command_delta, 0);
@@ -1023,7 +1087,7 @@ void calibrate_x_min(struct robot *my_robot)
     set_new_command(&bot_command_alpha, angletodo * RAD2DEG );
     
     
-    for(i = 0; (i < 75) && (fabs(0-maximus.theta)>0.035); i++) {
+    for(i = 0; (i < 50) && (fabs(0-maximus.theta)>0.035); i++) {
         delay(50);
         t.header.frame_id = odom;
         t.child_frame_id = base_link;
@@ -1066,7 +1130,7 @@ void calibrate_x_min(struct robot *my_robot)
     // Set the Y position and theta
     my_robot->theta = 0;
     //my_robot->pos_Y = 0.000 + DISTANCE_REAR_WHEELS;
-    my_robot->pos_X = 0.0 + DISTANCE_REAR_WHEELS; 
+    my_robot->pos_X = -1.500 + DISTANCE_REAR_WHEELS; 
     
     set_new_command(&bot_command_alpha, 0);
     set_new_command(&bot_command_delta, 0);
@@ -1086,9 +1150,9 @@ void calibrate_x_min(struct robot *my_robot)
         nh.spinOnce();
     }
     
-    set_new_command(&bot_command_delta, 0.100);
+    set_new_command(&bot_command_delta, 0.150);
     
-    for(i = 0; i < 20; i++) {
+    for(i = 0; i < 40; i++) {
         delay(50);
         t.header.frame_id = odom;
         t.child_frame_id = base_link;
@@ -1113,6 +1177,119 @@ void calibrate_x_min(struct robot *my_robot)
     alpha_and_theta = 1;
     
 }
+
+void calibrate_y_min(struct robot *my_robot)
+{
+    int i = 0;
+    // Put the robot in low speed mode
+    delta_motor.max_speed = 4000;
+    alpha_motor.max_speed = 50000;
+    // First : turn in the correct direction
+    set_new_command(&bot_command_alpha, 0);
+    set_new_command(&bot_command_delta, 0);
+    alpha_and_theta = 0;
+    //x = msg.data - 1.0;
+    double angletodo = (PI / 2)-maximus.theta;
+   
+    if (angletodo > PI)
+        angletodo = angletodo - 2 * PI;
+    if (angletodo < -PI)
+        angletodo = 2 * PI + angletodo;
+
+    set_new_command(&bot_command_alpha, angletodo * RAD2DEG );
+    
+    
+    for(i = 0; (i < 50) && (fabs((PI / 2)-maximus.theta)>0.035); i++) {
+        delay(50);
+        t.header.frame_id = odom;
+        t.child_frame_id = base_link;
+    
+        t.transform.translation.x = maximus.pos_X;
+        t.transform.translation.y = maximus.pos_Y;
+    
+        t.transform.rotation = tf::createQuaternionFromYaw(maximus.theta);
+        t.header.stamp = nh.now();
+    
+        broadcaster.sendTransform(t);
+        nh.spinOnce();
+    }
+    
+    // Go back
+    // Put the robot in low speed mode
+    delta_motor.max_speed = 40000;
+    alpha_motor.max_speed = 5000;
+    // go back to touch the wall
+    set_new_command(&bot_command_alpha, 0);
+    set_new_command(&bot_command_delta, -1000);
+    
+    while ((digitalRead(LEFT_REAR_SENSOR) == 1) || (digitalRead(RIGHT_REAR_SENSOR) == 1)) {
+        delay(100);
+        t.header.frame_id = odom;
+        t.child_frame_id = base_link;
+    
+        t.transform.translation.x = maximus.pos_X;
+        t.transform.translation.y = maximus.pos_Y;
+    
+        t.transform.rotation = tf::createQuaternionFromYaw(maximus.theta);
+        t.header.stamp = nh.now();
+    
+        broadcaster.sendTransform(t);
+        nh.spinOnce();
+    }
+    
+    delay(300);
+    
+    // Set the Y position and theta
+    my_robot->theta = 1.570796;
+    my_robot->pos_Y = 0.0 + DISTANCE_REAR_WHEELS;
+    //my_robot->pos_X = 0.0 + DISTANCE_REAR_WHEELS; 
+    
+    set_new_command(&bot_command_alpha, 0);
+    set_new_command(&bot_command_delta, 0);
+    
+    for(i = 0; i < 6; i++) {
+        delay(50);
+        t.header.frame_id = odom;
+        t.child_frame_id = base_link;
+    
+        t.transform.translation.x = maximus.pos_X;
+        t.transform.translation.y = maximus.pos_Y;
+    
+        t.transform.rotation = tf::createQuaternionFromYaw(maximus.theta);
+        t.header.stamp = nh.now();
+    
+        broadcaster.sendTransform(t);
+        nh.spinOnce();
+    }
+    
+    set_new_command(&bot_command_delta, 0.150);
+    
+    for(i = 0; i < 40; i++) {
+        delay(50);
+        t.header.frame_id = odom;
+        t.child_frame_id = base_link;
+    
+        t.transform.translation.x = maximus.pos_X;
+        t.transform.translation.y = maximus.pos_Y;
+    
+        t.transform.rotation = tf::createQuaternionFromYaw(maximus.theta);
+        t.header.stamp = nh.now();
+    
+        broadcaster.sendTransform(t);
+        nh.spinOnce();
+    }
+    
+    // Set the speed to the maximum
+    delta_motor.max_speed = DELTA_MAX_SPEED;
+    alpha_motor.max_speed = ALPHA_MAX_SPEED;
+    
+    goal.x = maximus.pos_X;
+    goal.y = maximus.pos_Y;
+    
+    alpha_and_theta = 1;
+    
+}
+
 
 void init_first_position(struct robot *my_robot)
 {
