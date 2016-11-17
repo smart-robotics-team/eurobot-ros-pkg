@@ -1,6 +1,6 @@
 PETIT_costmap:
   global_frame: /world
-  robot_base_frame: /base_link
+  robot_base_frame: /petit_base_link
   transform_tolerance: 0.6
   update_frequency: 4.0
   publish_frequency: 0.5
@@ -26,7 +26,7 @@ PETIT_costmap:
   obstacles:
     observation_sources: PETIT_nav_laser
     PETIT_nav_laser: {sensor_frame: /petit_nav_laser_link, data_type: LaserScan, topic: /PETIT/nav_laser, marking: true, clearing: true, obstacle_range: 3.0}
-    fixed_obstacles: {sensor_frame: /world, data_type: PointCloud, topic: /GROS/fixed_obstacles, marking: true, clearing: false, obstacle_range: 3.0}
+    fixed_obstacles: {sensor_frame: /world, data_type: PointCloud, topic: /PETIT/fixed_obstacles, marking: true, clearing: false, obstacle_range: 3.0}
     track_unknown_space: false
 
   inflater:
@@ -53,7 +53,7 @@ PETIT_planner:
   allow_unknown: false
   visualize_potential: false
   global_frame: /world
-  robot_base_frame: /base_link
-  map_topic: /GROS/map
+  robot_base_frame: /petit_base_link
+  map_topic: /PETIT/map
 
 

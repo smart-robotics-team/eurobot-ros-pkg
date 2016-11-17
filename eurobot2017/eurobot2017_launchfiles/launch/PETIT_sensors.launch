@@ -3,7 +3,7 @@
 <launch>
   <master auto="start"/>
 
-  <node pkg="tf" type="static_transform_publisher" name="PETIT_navlaser_broadcaster" args="0.025 0 0 0 0 0 /base_link /petit_nav_laser_link 100" />
+  <node pkg="tf" type="static_transform_publisher" name="PETIT_navlaser_broadcaster" args="0.025 0 0 0 0 0 /petit_base_link /petit_nav_laser_link 100" />
 
   <!-- LASER NODE -->
   <node pkg="hokuyo_node" type="hokuyo_node" name="PETIT_hokuyo" output="screen">
@@ -24,16 +24,16 @@
   </node>
 
   <!-- ARDUINO LOW LEVEL MOTION CONTROL 
-  <node pkg="rosserial_python" type="serial_node.py" respawn="false" name="GROS_rosserial_motion_control" output="screen" args="/dev/ttyODOM">
+  <node pkg="rosserial_python" type="serial_node.py" respawn="false" name="PETIT_rosserial_motion_control" output="screen" args="/dev/ttyODOM">
 
         <remap from="/color" to="/GENERAL/color" />
-        <remap from="/alpha_ros" to="/GROS/alpha_ardu" />
-        <remap from="/delta_ros" to="/GROS/delta_ardu" />
-        <remap from="/ardugoal_out" to="/GROS/ardugoal" />
-        <remap from="/ardugoalrear_out" to="/GROS/ardugoal_rear" />
+        <remap from="/alpha_ros" to="/PETIT/alpha_ardu" />
+        <remap from="/delta_ros" to="/PETIT/delta_ardu" />
+        <remap from="/ardugoal_out" to="/PETIT/ardugoal" />
+        <remap from="/ardugoalrear_out" to="/PETIT/ardugoal_rear" />
         <remap from="/start_match" to="/GENERAL/start_game" />
-        <remap from="/left_servo" to="/GROS/left_servo" />
-        <remap from="/right_servo" to="/GROS/right_servo" />
+        <remap from="/left_servo" to="/PETIT/left_servo" />
+        <remap from="/right_servo" to="/PETIT/right_servo" />
   </node>
 
 
@@ -41,16 +41,16 @@
     	<param name="inverted" type="int" value="0" />
     	<param name="offset" type="int" value="0" />
 
-        <remap from="/input" to="/GROS/BASE/left_servo" />
-        <remap from="/output" to="/GROS/left_servo" />
+        <remap from="/input" to="/PETIT/BASE/left_servo" />
+        <remap from="/output" to="/PETIT/left_servo" />
   </node>
 
   <node pkg="common_servo_converter" type="common_servo_converter" respawn="true" name="standard_servo_base_right" output="screen">
         <param name="inverted" type="int" value="0" />
         <param name="offset" type="int" value="0" />
 
-        <remap from="/input" to="/GROS/BASE/right_servo" />
-        <remap from="/output" to="/GROS/right_servo" />
+        <remap from="/input" to="/PETIT/BASE/right_servo" />
+        <remap from="/output" to="/PETIT/right_servo" />
   </node>
 -->
 

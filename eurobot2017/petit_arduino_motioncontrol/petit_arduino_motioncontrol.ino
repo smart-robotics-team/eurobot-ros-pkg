@@ -300,8 +300,8 @@ double x = 1.0;
 double y = 0.0;
 double theta = 1.57;
 
-char base_link[] = "/base_link";
-char odom[] = "/odom";
+char base_link[] = "/petit_base_link";
+char odom[] = "/petit_odom";
 
 
 /*

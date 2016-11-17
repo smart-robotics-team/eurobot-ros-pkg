@@ -2,16 +2,15 @@
 
 <launch>
 
-
-  <node pkg="eurobot2016_obstacles" type="eurobot2016_obstacles" respawn="true" name="GROS_eurobot2016_obstacles" output="screen">
-        <remap from="/cloud" to="/GROS/fixed_obstacles" />
+  <node pkg="eurobot2016_obstacles" type="eurobot2016_obstacles" respawn="true" name="PETIT_eurobot2016_obstacles" output="screen">
+        <remap from="/cloud" to="/PETIT/fixed_obstacles" />
   </node>
 
 
-  <node pkg="tf" type="static_transform_publisher" name="GROS_worldodom_broadcaster" args="0 0 0 0 0 0 /world /odom 100" />
+  <node pkg="tf" type="static_transform_publisher" name="PETIT_worldodom_broadcaster" args="0 0 0 0 0 0 /world /petit_odom 100" />
 
   <!-- Path planner / Costmap -->
-  <node pkg="common_smart_nav" type="pathplanner_global" respawn="false" name="GROS_pathplanner" output="screen">
+  <node pkg="common_smart_nav" type="pathplanner_global" respawn="false" name="PETIT_pathplanner" output="screen">
     <param name="costmap_name" type="str" value="PETIT_costmap" />
     <param name="planner_name" type="str" value="PETIT_planner" />
     <param name="map_name" type="str" value="world" />
@@ -19,20 +18,20 @@
 
     <rosparam file="$(find eurobot2017_launchfiles)/conf/PETIT_nav_params.yaml" command="load" />
 
-        <remap from="/ROBOT/goal" to="/GROS/goal" />
-        <remap from="/ROBOT/plan" to="/GROS/plan" />
-        <remap from="/ROBOT/path_done" to="/GROS/path_done" />
-        <remap from="/ROBOT/compute_path" to="/GROS/compute_path" />
-        <remap from="/ROBOT/pause" to="/GROS/stop_planner" />
-        <remap from="/ROBOT/resume" to="/GROS/pause_planner" />
+        <remap from="/ROBOT/goal" to="/PETIT/goal" />
+        <remap from="/ROBOT/plan" to="/PETIT/plan" />
+        <remap from="/ROBOT/path_done" to="/PETIT/path_done" />
+        <remap from="/ROBOT/compute_path" to="/PETIT/compute_path" />
+        <remap from="/ROBOT/pause" to="/PETIT/stop_planner" />
+        <remap from="/ROBOT/resume" to="/PETIT/pause_planner" />
 
-        <remap from="/ROBOT/get_robot_pose" to="/GROS/get_robot_pose" />
-        <remap from="/ROBOT/get_distance" to="/GROS/get_distance" />
-        <remap from="/ROBOT/get_path" to="/GROS/get_path" />
+        <remap from="/ROBOT/get_robot_pose" to="/PETIT/get_robot_pose" />
+        <remap from="/ROBOT/get_distance" to="/PETIT/get_distance" />
+        <remap from="/ROBOT/get_path" to="/PETIT/get_path" />
   </node>
 
   <!-- Path wrapper = Path follower -->
-  <node pkg="common_smart_nav" type="arduino_pathwrapper" respawn="false" name="GROS_pathwrapper" output="screen">
+  <node pkg="common_smart_nav" type="arduino_pathwrapper" respawn="false" name="PETIT_pathwrapper" output="screen">
     <param name="map_name" type="str" value="world" />
     <param name="base_name" type="str" value="base_link" />
 
@@ -44,14 +43,14 @@
     <param name="Py" type="double" value="1.4" />
     <param name="Pz" type="double" value="1.5" />
 
-       <remap from="/ROBOT/plan" to="/GROS/plan" />
-        <remap from="/ROBOT/get_robot_pose" to="/GROS/get_robot_pose" />
-        <remap from="/cmd_vel" to="/GROS/cmd_vel" />
-        <remap from="/ROBOT/ardugoal" to="/GROS/ardugoal" />
-        <remap from="/resume_nav" to="/GROS/resume_pathwrapper" />
-        <remap from="/pause_nav" to="/GROS/pause_pathwrapper" />
-        <remap from="/path_done" to="/GROS/path_done" />
-        <remap from="/pause_planner" to="/GROS/pause_planner" />
+       <remap from="/ROBOT/plan" to="/PETIT/plan" />
+        <remap from="/ROBOT/get_robot_pose" to="/PETIT/get_robot_pose" />
+        <remap from="/cmd_vel" to="/PETIT/cmd_vel" />
+        <remap from="/ROBOT/ardugoal" to="/PETIT/ardugoal" />
+        <remap from="/resume_nav" to="/PETIT/resume_pathwrapper" />
+        <remap from="/pause_nav" to="/PETIT/pause_pathwrapper" />
+        <remap from="/path_done" to="/PETIT/path_done" />
+        <remap from="/pause_planner" to="/PETIT/pause_planner" />
   </node>
 
 
