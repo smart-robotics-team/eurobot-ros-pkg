@@ -33,7 +33,7 @@
   <!-- Path wrapper = Path follower -->
   <node pkg="common_smart_nav" type="arduino_pathwrapper" respawn="false" name="PETIT_pathwrapper" output="screen">
     <param name="map_name" type="str" value="world" />
-    <param name="base_name" type="str" value="base_link" />
+    <param name="base_name" type="str" value="petit_base_link" />
 
     <param name="nb_step_skip" type="int" value="9" />
     <param name="max_dist_skip" type="double" value="0.12" />
@@ -47,9 +47,9 @@
         <remap from="/ROBOT/get_robot_pose" to="/PETIT/get_robot_pose" />
         <remap from="/cmd_vel" to="/PETIT/cmd_vel" />
         <remap from="/ROBOT/ardugoal" to="/PETIT/ardugoal" />
-        <remap from="/resume_nav" to="/PETIT/resume_pathwrapper" />
-        <remap from="/pause_nav" to="/PETIT/pause_pathwrapper" />
-        <remap from="/path_done" to="/PETIT/path_done" />
+        <remap from="/ROBOT/resume_nav" to="/PETIT/resume_pathwrapper" />
+        <remap from="/ROBOT/pause_nav" to="/PETIT/pause_pathwrapper" />
+        <remap from="/ROBOT/path_done" to="/PETIT/path_done" />
         <remap from="/pause_planner" to="/PETIT/pause_planner" />
   </node>
 

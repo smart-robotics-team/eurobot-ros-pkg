@@ -48,13 +48,15 @@ class Stop(State):
         return 'succeeded'
 
 class Pause(State):
-    def __init__(self):
+    def __init__(self, value):
         State.__init__(self, outcomes=['succeeded','aborted','preempted'])
+
+	self.value = value
         pass
 
     def execute(self, userdata):
         rospy.loginfo("Thinking...")
-        rospy.sleep(0.5)   
+        rospy.sleep(self.value)   
         return 'succeeded'
 
         
@@ -63,8 +65,12 @@ class Nav2Waypoint(State):
         State.__init__(self, outcomes=['succeeded','aborted','preempted'])
         
         # Subscribe to the move_base action server
-        self.move_base = actionlib.SimpleActionClient("PETIT_pathplanner", MoveBaseAction)
-        self.waypoint = waypoint
+        #self.move_base = actionlib.SimpleActionClient("PETIT_pathplanner", MoveBaseAction)
+        self.move_base = actionlib.SimpleActionClient("move_base_smart", MoveBaseAction)
+        
+	self.waypoint = PoseStamped()
+	self.waypoint.header.frame_id = "world"
+	self.waypoint.pose = waypoint
         # Wait up to 60 seconds for the action server to become available
         # TODO  
         # TODO  
@@ -73,6 +79,7 @@ class Nav2Waypoint(State):
         # TODO  
         # TODO  
         # TODO  
+	self.move_base.wait_for_server(rospy.Duration(60))
         rospy.loginfo("Connected to move_base action server")
         
         self.goal = MoveBaseGoal()
@@ -125,7 +132,7 @@ class MoveForward(State):
         self.pause_pub.publish(Empty())
         rospy.sleep(0.1)   
 	tmp_distance = Int32()
-	tmp_distance.data = value * 1000
+	tmp_distance.data = self.value * 1000
         self.distance_pub.publish(tmp_distance)
         rospy.sleep(4)
         self.resume_pub.publish(Empty())
@@ -144,7 +151,7 @@ class CalibX(State):
         tmp_int = Int32()
         tmp_int.data = 0
         self.calibrate_pub.publish(tmp_int)
-        rospy.sleep(20)
+        rospy.sleep(10)
         return 'succeeded'
 
 class CalibY(State):
@@ -159,7 +166,7 @@ class CalibY(State):
         tmp_int = Int32()
         tmp_int.data = 1
         self.calibrate_pub.publish(tmp_int)
-        rospy.sleep(20)
+        rospy.sleep(10)
         return 'succeeded'
 
 class Forks(State):
@@ -210,11 +217,11 @@ class SMACHAI():
 
         # Append each of the four waypoints to the list.  Each waypoint
         # is a pose consisting of a position and orientation in the map frame.
-        self.waypoints.append(Pose(Point(0.4, 0.65, 0.0), quaternions[0]))
-        self.waypoints.append(Pose(Point(1.1, 0.50, 0.0), quaternions[1]))
-        self.waypoints.append(Pose(Point(0.4, 0.35, 0.0), quaternions[2]))
-        self.waypoints.append(Pose(Point(1.0, 0.65, 0.0), quaternions[3]))
-        self.waypoints.append(Pose(Point(1.2, 0.30, 0.0), quaternions[4]))
+        self.waypoints.append(Pose(Point(-0.4, 0.65, 0.0), quaternions[0]))
+        self.waypoints.append(Pose(Point(-1.1, 0.50, 0.0), quaternions[1]))
+        self.waypoints.append(Pose(Point(-0.4, 0.35, 0.0), quaternions[2]))
+        self.waypoints.append(Pose(Point(-1.0, 0.65, 0.0), quaternions[3]))
+        self.waypoints.append(Pose(Point(-1.2, 0.30, 0.0), quaternions[4]))
 
 	# Publisher to manually control the robot (e.g. to stop it)
     	self.cmd_vel_pub = rospy.Publisher('/PETIT/cmd_vel', Twist)
@@ -241,6 +248,10 @@ class SMACHAI():
                                           'aborted':'aborted'})
 	    # NavPoint 1 
 	    StateMachine.add('GOTO_1_1', Nav2Waypoint(self.waypoints[0]),
+                             transitions={'succeeded':'PAUSE_1',
+                                          'aborted':'aborted'})
+	    # Pause 
+	    StateMachine.add('PAUSE_1', Pause(1.0),
                              transitions={'succeeded':'FORWARD_1',
                                           'aborted':'aborted'})
 	    # Avancer 
@@ -260,6 +271,10 @@ class SMACHAI():
                                           'aborted':'aborted'})
 	    # NavPoint 2
 	    StateMachine.add('GOTO_2_1', Nav2Waypoint(self.waypoints[1]),
+                             transitions={'succeeded':'PAUSE_2',
+                                          'aborted':'aborted'})
+	    # Pause 
+	    StateMachine.add('PAUSE_2', Pause(1.0),
                              transitions={'succeeded':'FORWARD_2',
                                           'aborted':'aborted'})
 	    # Avancer
@@ -279,14 +294,26 @@ class SMACHAI():
                                           'aborted':'aborted'})
 	    # NavPoint 3
 	    StateMachine.add('GOTO_3_1', Nav2Waypoint(self.waypoints[2]),
+                             transitions={'succeeded':'PAUSE_3',
+                                          'aborted':'aborted'})
+	    # Pause 
+	    StateMachine.add('PAUSE_3', Pause(2.0),
                              transitions={'succeeded':'GOTO_4_1',
                                           'aborted':'aborted'})
 	    # NavPoint 4
 	    StateMachine.add('GOTO_4_1', Nav2Waypoint(self.waypoints[3]),
+                             transitions={'succeeded':'PAUSE_4',
+                                          'aborted':'aborted'})
+	    # Pause 
+	    StateMachine.add('PAUSE_4', Pause(2.0),
                              transitions={'succeeded':'GOTO_2_2',
                                           'aborted':'aborted'})
 	    # NavPoint 2
 	    StateMachine.add('GOTO_2_2', Nav2Waypoint(self.waypoints[1]),
+                             transitions={'succeeded':'PAUSE_5',
+                                          'aborted':'aborted'})
+	    # Pause 
+	    StateMachine.add('PAUSE_5', Pause(1.0),
                              transitions={'succeeded':'FORWARD_3',
                                           'aborted':'aborted'})
 	    # Avancer
@@ -306,6 +333,10 @@ class SMACHAI():
                                           'aborted':'aborted'})
 	    # NavPoint 1
 	    StateMachine.add('GOTO_1_2', Nav2Waypoint(self.waypoints[0]),
+                             transitions={'succeeded':'PAUSE_6',
+                                          'aborted':'aborted'})
+	    # Pause 
+	    StateMachine.add('PAUSE_6', Pause(1.0),
                              transitions={'succeeded':'FORWARD_4',
                                           'aborted':'aborted'})
 	    # Avancer
@@ -321,11 +352,11 @@ class SMACHAI():
                                           'aborted':'aborted'})
 	    # Reculer
 	    StateMachine.add('BACKWARD_4', MoveForward(-0.15),
-                             transitions={'succeeded':'FORKS_10',
+                             transitions={'succeeded':'GOTO_5_1',
                                           'aborted':'aborted'})
 	    # NavPoint 5
 	    StateMachine.add('GOTO_5_1', Nav2Waypoint(self.waypoints[4]),
-                             transitions={'succeeded':'CALIBRATE_X',
+                             transitions={'succeeded':'GOTO_1_1',
                                           'aborted':'aborted'})
 
 
