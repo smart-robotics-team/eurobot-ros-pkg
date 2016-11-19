@@ -56,4 +56,12 @@ PETIT_planner:
   robot_base_frame: /petit_base_link
   map_topic: /PETIT/map
 
-
+GlobalPlanner:
+  allow_unknown: false
+  visualize_potential: false
+  default_tolerance: 0.0
+  use_dijkstra: true
+  global_frame: /world
+  robot_base_frame: /petit_base_link
+  map_topic: /PETIT/map
+  
