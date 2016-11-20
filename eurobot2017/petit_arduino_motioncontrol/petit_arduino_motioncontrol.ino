@@ -89,9 +89,9 @@ volatile signed long DELTA_MAX_SPEED    =     70000;//23000//4000//23000
 #define DELTA_MIN_SPEED         7000//20000  
 #define DELTA_MIN_ERROR_ZERO    2  
 
-#define ALPHA_P         	350//200//400//1200
+#define ALPHA_P         	200//200//400//1200
 #define ALPHA_I         	0//25//50
-#define ALPHA_D         	200//500//2000//8000
+#define ALPHA_D         	100//500//2000//8000
 #define DELTA_P         	2000//1200//5000
 #define DELTA_I         	0
 #define DELTA_D         	1000//2000//4000
@@ -346,7 +346,8 @@ void positionCb(const geometry_msgs::Pose2D & goal_msg)
 
     goto_xy(goal_msg.x, goal_msg.y);
     //last_goal = goal_msg.last;
-    alpha_and_theta = 1;
+    //alpha_and_theta = 1;
+    set_alpha_theta_mode();
 }
 
 //ros::Subscriber < common_smart_nav::ArduGoal > pose_sub("ardugoal_out",
@@ -370,7 +371,8 @@ void positionrearCb(const geometry_msgs::Pose2D & goal_msg)
 
     goto_xy_back(goal_msg.x, goal_msg.y);
     //last_goal = goal_msg.last;
-    alpha_and_theta = 1;
+    //alpha_and_theta = 1;
+    set_alpha_theta_mode();
 }
 ros::Subscriber < geometry_msgs::Pose2D > poserear_sub("ardugoalrear_out",
                                                    &positionrearCb);
@@ -396,7 +398,8 @@ void messageCbalpha_ros(const std_msgs::Int32 & msg)
 
     set_new_command(&bot_command_alpha, 0);
     set_new_command(&bot_command_delta, 0);
-    alpha_and_theta = 0;
+    //alpha_and_theta = 0;
+    unset_alpha_theta_mode();
     //x = msg.data - 1.0;
     double angletodo = (((double)msg.data) / 1000.0) - maximus.theta;
    
@@ -418,7 +421,8 @@ void messageCbdelta_ros(const std_msgs::Int32 & msg)
 
     set_new_command(&bot_command_alpha, 0);
     set_new_command(&bot_command_delta, 0);
-    alpha_and_theta = 0;
+    //alpha_and_theta = 0;
+    unset_alpha_theta_mode();
     //x = msg.data - 1.0
     double dist = (((double)msg.data) / 1000.0);
 
@@ -781,7 +785,8 @@ void setup()
     }
   */
     // Enable motion control for auto init
-    alpha_and_theta = 0;
+    //alpha_and_theta = 0;
+    unset_alpha_theta_mode();
     motion_control_ON = 1;
     roboclaw_ON = 1;
     
@@ -795,7 +800,8 @@ void setup()
     // Disable motion control
     motion_control_ON = 0;
     roboclaw_ON = 0;
-    alpha_and_theta = 1;
+    //alpha_and_theta = 1;
+    set_alpha_theta_mode();
 
     motion_control_ON = 1;
     roboclaw_ON = 1;
@@ -991,7 +997,8 @@ void bad_init_position(struct robot *my_robot)
     */
     calibrate_y_min(my_robot);
     
-    alpha_and_theta = 0;
+    //alpha_and_theta = 0;
+    unset_alpha_theta_mode();
     // Put the robot in low speed mode
     delta_motor.max_speed = 4000;
     alpha_motor.max_speed = 50000;
@@ -1027,7 +1034,8 @@ void bad_init_position(struct robot *my_robot)
     goal.x = maximus.pos_X;
     goal.y = maximus.pos_Y;
     
-    alpha_and_theta = 1;
+    //alpha_and_theta = 1;
+    set_alpha_theta_mode();
     
     /*
     // go back to touch the wall
@@ -1075,7 +1083,8 @@ void calibrate_x_min(struct robot *my_robot)
     // First : turn in the correct direction
     set_new_command(&bot_command_alpha, 0);
     set_new_command(&bot_command_delta, 0);
-    alpha_and_theta = 0;
+    //alpha_and_theta = 0;
+    unset_alpha_theta_mode();
     //x = msg.data - 1.0;
     double angletodo = -maximus.theta;
    
@@ -1174,7 +1183,8 @@ void calibrate_x_min(struct robot *my_robot)
     goal.x = maximus.pos_X;
     goal.y = maximus.pos_Y;
     
-    alpha_and_theta = 1;
+    //alpha_and_theta = 1;
+    set_alpha_theta_mode();
     
 }
 
@@ -1187,7 +1197,8 @@ void calibrate_y_min(struct robot *my_robot)
     // First : turn in the correct direction
     set_new_command(&bot_command_alpha, 0);
     set_new_command(&bot_command_delta, 0);
-    alpha_and_theta = 0;
+    //alpha_and_theta = 0;
+    unset_alpha_theta_mode();
     //x = msg.data - 1.0;
     double angletodo = (PI / 2)-maximus.theta;
    
@@ -1286,7 +1297,8 @@ void calibrate_y_min(struct robot *my_robot)
     goal.x = maximus.pos_X;
     goal.y = maximus.pos_Y;
     
-    alpha_and_theta = 1;
+    //alpha_and_theta = 1;
+    set_alpha_theta_mode();
     
 }
 
@@ -1847,59 +1859,28 @@ inline void get_Odometers(void)
 //    update_motor(&delta_motor);
 }
 
+void set_alpha_theta_mode()
+{
+    alpha_motor.kP 		= ALPHA_P; 
+    alpha_motor.kI 		= ALPHA_I;
+    alpha_motor.kD 		= ALPHA_D; 
+    
+    alpha_and_theta = 1;
+}
+
+void unset_alpha_theta_mode()
+{
+    alpha_motor.kP 		= 3 * ALPHA_P; 
+    alpha_motor.kI 		= ALPHA_I;
+    alpha_motor.kD 		= 2 * ALPHA_D; 
+    
+    alpha_and_theta = 0;
+}
 /*******************************/
 /* MOTION CONTROL FUNCTIONS */
 /*******************************/
 inline void do_motion_control(void)
 {
-
-#ifdef PATH_FOLLOWING
-
-    // PID angle
-    alpha_motor.des_speed =
-        compute_position_PID(&bot_command_alpha, &alpha_motor);
-
-    // PID distance
-    if ((bot_command_alpha.state == WAITING_BEGIN) || (bot_command_alpha.state == PROCESSING_COMMAND)) {        // If alpha motor have not finished its movement 
-
-        double ang = angle_coord(&maximus, goal.x, goal.y, FORWARD) * RAD2DEG;
-        if (abs(ang) > 3
-            && (bot_command_alpha.state == PROCESSING_COMMAND))
-            set_new_command(&bot_command_alpha, ang);
-
-        alpha_motor.des_speed =
-            compute_position_PID(&bot_command_alpha, &alpha_motor);
-
-        double dist = distance_coord(&maximus, goal.x, goal.y, FORWARD);
-        //double max_possible_speed = 1050000 * dist / ang;
-        double max_possible_speed = 500000 * dist / ang;
-        if (max_possible_speed < 200)
-            max_possible_speed = 0;
-        delta_motor.max_speed =
-            min(max_possible_speed, DELTA_MAX_SPEED - 10000);
-        set_new_command(&bot_command_delta, dist);
-        prev_bot_command_delta.state = WAITING_BEGIN;
-
-
-
-    } else {
-        if ((prev_bot_command_delta.state == WAITING_BEGIN)) {
-            double dist = distance_coord(&maximus, goal.x, goal.y, FORWARD);
-
-            delta_motor.max_speed = DELTA_MAX_SPEED;
-            set_new_command(&bot_command_delta, dist);
-
-            prev_bot_command_delta.state = PROCESSING_COMMAND;
-
-        }
-
-    }
-    delta_motor.des_speed =
-        compute_position_PID(&bot_command_delta, &delta_motor);
-
-
-#else
-
 
 if(alpha_and_theta == 0) {
     // PID angle
@@ -1972,7 +1953,8 @@ else {
             
           //set_new_command(&bot_command_alpha, desired_last_theta);
             last_goal = 0;
-            alpha_and_theta = 0;
+            //alpha_and_theta = 0;
+            unset_alpha_theta_mode();
         }
         
     }
@@ -1980,7 +1962,6 @@ else {
         compute_position_PID(&bot_command_delta, &delta_motor);
 
 }
-#endif
 
 
 }

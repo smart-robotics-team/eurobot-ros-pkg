@@ -8,7 +8,7 @@ PETIT_costmap:
   obstacle_range: 3.0
   raytrace_range: 3.5
   #footprint: [[-0.1, -0.1], [-0.1, 0.1], [0.1, 0.1], [0.1, -0.1]]
-  robot_radius: 0.20
+  robot_radius: 0.15
   static_map: false
   resolution: 0.02
   map_type: costmap
@@ -30,8 +30,8 @@ PETIT_costmap:
     track_unknown_space: false
 
   inflater:
-    robot_radius: 0.20
-    inflation_radius: 0.25
+    robot_radius: 0.15
+    inflation_radius: 0.21
     cost_scaling_factor: 10.0
 
   plugins:

@@ -138,6 +138,27 @@ class MoveForward(State):
         self.resume_pub.publish(Empty())
         return 'succeeded'
 
+class MoveRotate(State):
+    def __init__(self, value):
+        State.__init__(self, outcomes=['succeeded','aborted','preempted'])
+
+	self.value = value
+        self.distance_pub = rospy.Publisher('/PETIT/alpha_ardu', Int32)
+        self.pause_pub = rospy.Publisher('/PETIT/pause_pathwrapper', Empty)
+        self.resume_pub = rospy.Publisher('/PETIT/resume_pathwrapper', Empty)
+        pass
+
+    def execute(self, userdata):
+        rospy.loginfo("rotating")
+        self.pause_pub.publish(Empty())
+        rospy.sleep(0.1)   
+	tmp_distance = Int32()
+	tmp_distance.data = self.value * 1000
+        self.distance_pub.publish(tmp_distance)
+        rospy.sleep(4)
+        self.resume_pub.publish(Empty())
+        return 'succeeded'
+
 
 class CalibX(State):
     def __init__(self):
@@ -151,7 +172,7 @@ class CalibX(State):
         tmp_int = Int32()
         tmp_int.data = 0
         self.calibrate_pub.publish(tmp_int)
-        rospy.sleep(10)
+        rospy.sleep(8)
         return 'succeeded'
 
 class CalibY(State):
@@ -166,7 +187,7 @@ class CalibY(State):
         tmp_int = Int32()
         tmp_int.data = 1
         self.calibrate_pub.publish(tmp_int)
-        rospy.sleep(10)
+        rospy.sleep(8)
         return 'succeeded'
 
 class Forks(State):
@@ -202,7 +223,7 @@ class SMACHAI():
         quaternions = list()
 
         # First define the corner orientations as Euler angles
-        euler_angles = (0, pi, pi/2, pi, pi/4)
+        euler_angles = (0, pi, pi/2, -pi/2, pi/4)
 
         # Then convert the angles to quaternions
         for angle in euler_angles:
@@ -218,9 +239,9 @@ class SMACHAI():
         # Append each of the four waypoints to the list.  Each waypoint
         # is a pose consisting of a position and orientation in the map frame.
         self.waypoints.append(Pose(Point(-0.4, 0.65, 0.0), quaternions[0]))
-        self.waypoints.append(Pose(Point(-1.1, 0.50, 0.0), quaternions[1]))
+        self.waypoints.append(Pose(Point(-1.0, 0.50, 0.0), quaternions[1]))
         self.waypoints.append(Pose(Point(-0.4, 0.35, 0.0), quaternions[2]))
-        self.waypoints.append(Pose(Point(-1.0, 0.65, 0.0), quaternions[3]))
+        self.waypoints.append(Pose(Point(-0.8, 0.65, 0.0), quaternions[3]))
         self.waypoints.append(Pose(Point(-1.2, 0.30, 0.0), quaternions[4]))
 
 	# Publisher to manually control the robot (e.g. to stop it)
@@ -267,6 +288,10 @@ class SMACHAI():
                                           'aborted':'aborted'})
 	    # Reculer
 	    StateMachine.add('BACKWARD_1', MoveForward(-0.15),
+                             transitions={'succeeded':'ROTATE_1',
+                                          'aborted':'aborted'})
+	    # Rotation
+	    StateMachine.add('ROTATE_1', MoveRotate(pi),
                              transitions={'succeeded':'GOTO_2_1',
                                           'aborted':'aborted'})
 	    # NavPoint 2
@@ -290,6 +315,10 @@ class SMACHAI():
                                           'aborted':'aborted'})
 	    # Reculer
 	    StateMachine.add('BACKWARD_2', MoveForward(-0.15),
+                             transitions={'succeeded':'ROTATE_2',
+                                          'aborted':'aborted'})
+	    # Rotation
+	    StateMachine.add('ROTATE_2', MoveRotate(0),
                              transitions={'succeeded':'GOTO_3_1',
                                           'aborted':'aborted'})
 	    # NavPoint 3
@@ -329,6 +358,10 @@ class SMACHAI():
                                           'aborted':'aborted'})
 	    # Reculer
 	    StateMachine.add('BACKWARD_3', MoveForward(-0.15),
+                             transitions={'succeeded':'ROTATE_3',
+                                          'aborted':'aborted'})
+	    # Rotation
+	    StateMachine.add('ROTATE_3', MoveRotate(0),
                              transitions={'succeeded':'GOTO_1_2',
                                           'aborted':'aborted'})
 	    # NavPoint 1
@@ -352,11 +385,15 @@ class SMACHAI():
                                           'aborted':'aborted'})
 	    # Reculer
 	    StateMachine.add('BACKWARD_4', MoveForward(-0.15),
+                             transitions={'succeeded':'ROTATE_4',
+                                          'aborted':'aborted'})
+	    # Rotation
+	    StateMachine.add('ROTATE_4', MoveRotate(pi),
                              transitions={'succeeded':'GOTO_5_1',
                                           'aborted':'aborted'})
 	    # NavPoint 5
 	    StateMachine.add('GOTO_5_1', Nav2Waypoint(self.waypoints[4]),
-                             transitions={'succeeded':'GOTO_1_1',
+                             transitions={'succeeded':'CALIBRATE_X',
                                           'aborted':'aborted'})
 
 
