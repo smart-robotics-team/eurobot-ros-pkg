@@ -44,7 +44,8 @@ void delay_ms(uint16_t millis)
 #define TICK_PER_MM_RIGHT 	(18.6256756)
 #define TICK_PER_M_LEFT 	(17270.0)//(18205.6756)
 #define TICK_PER_M_RIGHT 	(17270.0)//(18205.6756)
-#define DIAMETER 	        0.19814//0.1970 //0.2951                       // Distance between the 2 wheels
+//#define DIAMETER 	        0.19950//0.19814//0.1970 //0.2951                       // Distance between the 2 wheels
+double DIAMETER = 0.19970;
 
 #define DISTANCE_REAR_WHEELS    0.055
 
@@ -78,12 +79,12 @@ void delay_ms(uint16_t millis)
 #define WAITING_BEGIN 		2
 #define ERROR 			3
 
-volatile signed long ALPHA_MAX_SPEED    =     50000;//13000//3000//13000 
+volatile signed long ALPHA_MAX_SPEED    =     40000;//13000//3000//13000 
 #define ALPHA_MAX_ACCEL         30000//32000//300//800
 #define ALPHA_MAX_DECEL         64000//500//1600 
 #define ALPHA_MIN_SPEED         6000 
 #define ALPHA_MIN_ERROR_ZERO    4 
-volatile signed long DELTA_MAX_SPEED    =     70000;//23000//4000//23000  
+volatile signed long DELTA_MAX_SPEED    =     50000;//23000//4000//23000  
 #define DELTA_MAX_ACCEL         40000//300//1000     
 #define DELTA_MAX_DECEL         88000//600//2200 
 #define DELTA_MIN_SPEED         7000//20000  
@@ -500,6 +501,11 @@ void setMaxAngularSpeedCb(const std_msgs::Int32 & msg)
 }
 ros::Subscriber < std_msgs::Int32 > setMaxAngularSpeed_ros("setMaxAngularSpeed", &setMaxAngularSpeedCb);
 
+void setDiameterCb(const std_msgs::Float32 & msg)
+{
+  DIAMETER = msg.data;
+}
+ros::Subscriber < std_msgs::Float32 > set_diameter_ros("setDiameter", &setDiameterCb);
 
 std_msgs::Empty start_message;
 ros::Publisher start_pub("start_match", &start_message);
@@ -758,6 +764,8 @@ void setup()
     nh.subscribe(setMaxLinearSpeed_ros);
     nh.subscribe(setMaxAngularSpeed_ros);
     
+    nh.subscribe(set_diameter_ros);
+    
     nh.advertise(start_pub);
     
 /*
@@ -996,7 +1004,7 @@ void bad_init_position(struct robot *my_robot)
     delay(5000);
     */
     calibrate_y_min(my_robot);
-    
+/*    
     //alpha_and_theta = 0;
     unset_alpha_theta_mode();
     // Put the robot in low speed mode
@@ -1036,7 +1044,7 @@ void bad_init_position(struct robot *my_robot)
     
     //alpha_and_theta = 1;
     set_alpha_theta_mode();
-    
+    */
     /*
     // go back to touch the wall
     set_new_command(&bot_command_alpha, 0);
@@ -1159,9 +1167,9 @@ void calibrate_x_min(struct robot *my_robot)
         nh.spinOnce();
     }
     
-    set_new_command(&bot_command_delta, 0.150);
+    set_new_command(&bot_command_delta, 0.250);
     
-    for(i = 0; i < 40; i++) {
+    for(i = 0; i < 60; i++) {
         delay(50);
         t.header.frame_id = odom;
         t.child_frame_id = base_link;
@@ -1273,9 +1281,9 @@ void calibrate_y_min(struct robot *my_robot)
         nh.spinOnce();
     }
     
-    set_new_command(&bot_command_delta, 0.150);
+    set_new_command(&bot_command_delta, 0.250);
     
-    for(i = 0; i < 40; i++) {
+    for(i = 0; i < 60; i++) {
         delay(50);
         t.header.frame_id = odom;
         t.child_frame_id = base_link;
