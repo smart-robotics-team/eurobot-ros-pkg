@@ -223,7 +223,7 @@ class SMACHAI():
         quaternions = list()
 
         # First define the corner orientations as Euler angles
-        euler_angles = (0, pi, pi/2, -pi/2, pi/4)
+        euler_angles = (0, pi, pi/2, -pi/2, pi/4, 0)
 
         # Then convert the angles to quaternions
         for angle in euler_angles:
@@ -243,6 +243,7 @@ class SMACHAI():
         self.waypoints.append(Pose(Point(-0.4, 0.35, 0.0), quaternions[2]))
         self.waypoints.append(Pose(Point(-0.8, 0.65, 0.0), quaternions[3]))
         self.waypoints.append(Pose(Point(-1.2, 0.30, 0.0), quaternions[4]))
+        self.waypoints.append(Pose(Point(-0.4, 0.657, 0.0), quaternions[5]))
 
 	# Publisher to manually control the robot (e.g. to stop it)
     	self.cmd_vel_pub = rospy.Publisher('/PETIT/cmd_vel', Twist)
@@ -267,6 +268,7 @@ class SMACHAI():
 	    StateMachine.add('CALIBRATE_Y', CalibY(),
                              transitions={'succeeded':'GOTO_1_1',
                                           'aborted':'aborted'})
+	    # PICK-UP
 	    # NavPoint 1 
 	    StateMachine.add('GOTO_1_1', Nav2Waypoint(self.waypoints[0]),
                              transitions={'succeeded':'PAUSE_1',
@@ -294,6 +296,7 @@ class SMACHAI():
 	    StateMachine.add('ROTATE_1', MoveRotate(pi),
                              transitions={'succeeded':'GOTO_2_1',
                                           'aborted':'aborted'})
+	    # DROP-OFF
 	    # NavPoint 2
 	    StateMachine.add('GOTO_2_1', Nav2Waypoint(self.waypoints[1]),
                              transitions={'succeeded':'PAUSE_2',
@@ -303,7 +306,7 @@ class SMACHAI():
                              transitions={'succeeded':'FORWARD_2',
                                           'aborted':'aborted'})
 	    # Avancer
-	    StateMachine.add('FORWARD_2', MoveForward(0.15),
+	    StateMachine.add('FORWARD_2', MoveForward(0.13),
                              transitions={'succeeded':'FORKS_20',
                                           'aborted':'aborted'})
 	    # Baisser fourches
@@ -337,6 +340,7 @@ class SMACHAI():
 	    StateMachine.add('PAUSE_4', Pause(2.0),
                              transitions={'succeeded':'GOTO_2_2',
                                           'aborted':'aborted'})
+	    # PICK-UP
 	    # NavPoint 2
 	    StateMachine.add('GOTO_2_2', Nav2Waypoint(self.waypoints[1]),
                              transitions={'succeeded':'PAUSE_5',
@@ -364,8 +368,9 @@ class SMACHAI():
 	    StateMachine.add('ROTATE_3', MoveRotate(0),
                              transitions={'succeeded':'GOTO_1_2',
                                           'aborted':'aborted'})
+	    # DROP-OFF
 	    # NavPoint 1
-	    StateMachine.add('GOTO_1_2', Nav2Waypoint(self.waypoints[0]),
+	    StateMachine.add('GOTO_1_2', Nav2Waypoint(self.waypoints[5]),
                              transitions={'succeeded':'PAUSE_6',
                                           'aborted':'aborted'})
 	    # Pause 
@@ -373,7 +378,7 @@ class SMACHAI():
                              transitions={'succeeded':'FORWARD_4',
                                           'aborted':'aborted'})
 	    # Avancer
-	    StateMachine.add('FORWARD_4', MoveForward(0.15),
+	    StateMachine.add('FORWARD_4', MoveForward(0.13),
                              transitions={'succeeded':'FORKS_40',
                                           'aborted':'aborted'})
 	    # Baisser fourches
