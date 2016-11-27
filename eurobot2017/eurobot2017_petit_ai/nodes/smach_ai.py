@@ -134,7 +134,7 @@ class MoveForward(State):
 	tmp_distance = Int32()
 	tmp_distance.data = self.value * 1000
         self.distance_pub.publish(tmp_distance)
-        rospy.sleep(4)
+        rospy.sleep(3)
         self.resume_pub.publish(Empty())
         return 'succeeded'
 
@@ -172,7 +172,7 @@ class CalibX(State):
         tmp_int = Int32()
         tmp_int.data = 0
         self.calibrate_pub.publish(tmp_int)
-        rospy.sleep(8)
+        rospy.sleep(7)
         return 'succeeded'
 
 class CalibY(State):
@@ -187,7 +187,7 @@ class CalibY(State):
         tmp_int = Int32()
         tmp_int.data = 1
         self.calibrate_pub.publish(tmp_int)
-        rospy.sleep(8)
+        rospy.sleep(7)
         return 'succeeded'
 
 class Forks(State):
@@ -206,8 +206,21 @@ class Forks(State):
         rospy.sleep(0.5)
         return 'succeeded'
 
+class MaxLinearSpeed(State):
+    def __init__(self, value):
+        State.__init__(self, outcomes=['succeeded','aborted','preempted'])
 
+        self.value = value
+        self.speed_pub = rospy.Publisher('/PETIT/setMaxLinearSpeed', Int32)
+        pass
 
+    def execute(self, userdata):
+        rospy.loginfo("Change max speed")
+        tmp_int = Int32()
+        tmp_int.data = self.value
+        self.speed_pub.publish(tmp_int)
+        rospy.sleep(0.2)
+        return 'succeeded'
 
 
 
@@ -266,11 +279,19 @@ class SMACHAI():
                                           'aborted':'aborted'})
 	    # Calib Y
 	    StateMachine.add('CALIBRATE_Y', CalibY(),
-                             transitions={'succeeded':'GOTO_1_1',
+                             transitions={'succeeded':'MAX_SPEED_1',
                                           'aborted':'aborted'})
 	    # PICK-UP
+	    # Change speed
+	    StateMachine.add('MAX_SPEED_1', MaxLinearSpeed(70000),
+                             transitions={'succeeded':'GOTO_1_1',
+                                          'aborted':'aborted'})
 	    # NavPoint 1 
 	    StateMachine.add('GOTO_1_1', Nav2Waypoint(self.waypoints[0]),
+                             transitions={'succeeded':'MAX_SPEED_2',
+                                          'aborted':'aborted'})
+	    # Change speed
+	    StateMachine.add('MAX_SPEED_2', MaxLinearSpeed(40000),
                              transitions={'succeeded':'PAUSE_1',
                                           'aborted':'aborted'})
 	    # Pause 
@@ -285,7 +306,10 @@ class SMACHAI():
 	    StateMachine.add('FORKS_10', Forks(90),
                              transitions={'succeeded':'FORKS_11',
                                           'aborted':'aborted'})
-	    StateMachine.add('FORKS_11', Forks(85),
+	    StateMachine.add('FORKS_11', Forks(87),
+                             transitions={'succeeded':'FORKS_12',
+                                          'aborted':'aborted'})
+	    StateMachine.add('FORKS_12', Forks(83),
                              transitions={'succeeded':'BACKWARD_1',
                                           'aborted':'aborted'})
 	    # Reculer
@@ -294,11 +318,19 @@ class SMACHAI():
                                           'aborted':'aborted'})
 	    # Rotation
 	    StateMachine.add('ROTATE_1', MoveRotate(pi),
-                             transitions={'succeeded':'GOTO_2_1',
+                             transitions={'succeeded':'MAX_SPEED_3',
                                           'aborted':'aborted'})
 	    # DROP-OFF
+	    # Change speed
+	    StateMachine.add('MAX_SPEED_3', MaxLinearSpeed(70000),
+                             transitions={'succeeded':'GOTO_2_1',
+                                          'aborted':'aborted'})
 	    # NavPoint 2
 	    StateMachine.add('GOTO_2_1', Nav2Waypoint(self.waypoints[1]),
+                             transitions={'succeeded':'MAX_SPEED_4',
+                                          'aborted':'aborted'})
+	    # Change speed
+	    StateMachine.add('MAX_SPEED_4', MaxLinearSpeed(40000),
                              transitions={'succeeded':'PAUSE_2',
                                           'aborted':'aborted'})
 	    # Pause 
@@ -310,10 +342,13 @@ class SMACHAI():
                              transitions={'succeeded':'FORKS_20',
                                           'aborted':'aborted'})
 	    # Baisser fourches
-	    StateMachine.add('FORKS_20', Forks(90),
+	    StateMachine.add('FORKS_20', Forks(87),
                              transitions={'succeeded':'FORKS_21',
                                           'aborted':'aborted'})
-	    StateMachine.add('FORKS_21', Forks(95),
+	    StateMachine.add('FORKS_21', Forks(91),
+                             transitions={'succeeded':'FORKS_22',
+                                          'aborted':'aborted'})
+	    StateMachine.add('FORKS_22', Forks(95),
                              transitions={'succeeded':'BACKWARD_2',
                                           'aborted':'aborted'})
 	    # Reculer
@@ -357,7 +392,10 @@ class SMACHAI():
 	    StateMachine.add('FORKS_30', Forks(90),
                              transitions={'succeeded':'FORKS_31',
                                           'aborted':'aborted'})
-	    StateMachine.add('FORKS_31', Forks(85),
+	    StateMachine.add('FORKS_31', Forks(87),
+                             transitions={'succeeded':'FORKS_32',
+                                          'aborted':'aborted'})
+	    StateMachine.add('FORKS_32', Forks(83),
                              transitions={'succeeded':'BACKWARD_3',
                                           'aborted':'aborted'})
 	    # Reculer
@@ -382,10 +420,13 @@ class SMACHAI():
                              transitions={'succeeded':'FORKS_40',
                                           'aborted':'aborted'})
 	    # Baisser fourches
-	    StateMachine.add('FORKS_40', Forks(90),
+	    StateMachine.add('FORKS_40', Forks(87),
                              transitions={'succeeded':'FORKS_41',
                                           'aborted':'aborted'})
-	    StateMachine.add('FORKS_41', Forks(95),
+	    StateMachine.add('FORKS_41', Forks(91),
+                             transitions={'succeeded':'FORKS_42',
+                                          'aborted':'aborted'})
+	    StateMachine.add('FORKS_42', Forks(95),
                              transitions={'succeeded':'BACKWARD_4',
                                           'aborted':'aborted'})
 	    # Reculer
