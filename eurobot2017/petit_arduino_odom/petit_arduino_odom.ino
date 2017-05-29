@@ -9,6 +9,7 @@
 #include <std_msgs/Int8.h>
 #include <std_msgs/Float32.h>
 #include <std_msgs/Empty.h>
+#include <std_msgs/Bool.h>
 
 //#include <common_smart_nav/ArduGoal.h>
 
@@ -334,10 +335,10 @@ void calibrateCb(const std_msgs::Int32 & msg)
       calibrate_y_min(&maximus);
       break;
     case 2:
-      calibrate_x_min(&maximus);
+      calibrate_x_max(&maximus);
       break;
     case 3:
-      calibrate_x_min(&maximus);
+      calibrate_y_max(&maximus);
       break;
     default:
       calibrate_x_min(&maximus);
@@ -354,6 +355,8 @@ ros::Subscriber < std_msgs::Float32 > set_diameter_ros("setDiameter", &setDiamet
 
 std_msgs::Empty start_message;
 ros::Publisher start_pub("start_match", &start_message);
+std_msgs::Bool bool_message;
+ros::Publisher pub_calib_done("calib_done", &bool_message);
 
 
 /***********************/
@@ -440,7 +443,7 @@ ISR(TIMER1_OVF_vect)
     if ((transmit_status) == 1)
       move_motors(ALPHADELTA);
 */
-
+/*
     if (cpt_asserv > 3) {
         if (motion_control_ON == 1) {
             do_motion_control();
@@ -455,7 +458,7 @@ ISR(TIMER1_OVF_vect)
     } else {
         cpt_asserv++;
     }
-
+*/
 }
 
 void setup()
@@ -602,6 +605,8 @@ void setup()
     nh.subscribe(set_diameter_ros);
     
     nh.advertise(start_pub);
+    nh.advertise(pub_calib_done);
+    
       
 /*  color = 0;
     while(color == 0) { // color not choose  
@@ -706,7 +711,7 @@ void loop()
 void init_Robot(struct robot *my_robot)
 {
     my_robot->pos_X = 0;        // -700
-    my_robot->pos_Y = 0.14;     // 700
+    my_robot->pos_Y = 0.0;     // 700
     my_robot->theta = 0;        //PI/2;                                   // PI/2
     my_robot->desX = 0;
     my_robot->desY = 0;
@@ -809,142 +814,15 @@ void init_motors(void)
 
 void bad_init_position(struct robot *my_robot)
 {
-    int i = 0;
-    calibrate_x_min(my_robot);
-/*    alpha_and_theta = 0;
-    // Put the robot in low speed mode
-    delta_motor.max_speed = 40000;
-    alpha_motor.max_speed = 50000;
-    
-    set_new_command(&bot_command_alpha, (PI / 2 * RAD2DEG));
-    set_new_command(&bot_command_delta, 0);
-    delay(5000);
-    */
-    calibrate_y_min(my_robot);
-/*    
-    //alpha_and_theta = 0;
-    unset_alpha_theta_mode();
-    // Put the robot in low speed mode
-    delta_motor.max_speed = 4000;
-    alpha_motor.max_speed = 50000;
-    
-    double angletodo = (PI / 4)-maximus.theta;
-   
-    if (angletodo > PI)
-        angletodo = angletodo - 2 * PI;
-    if (angletodo < -PI)
-        angletodo = 2 * PI + angletodo;
-        
-    set_new_command(&bot_command_alpha, angletodo * RAD2DEG );
-    
-    for(i = 0; (i < 50) && (fabs((PI / 4)-maximus.theta)>0.035); i++) {
-        delay(50);
-        t.header.frame_id = odom;
-        t.child_frame_id = base_link;
-    
-        t.transform.translation.x = maximus.pos_X;
-        t.transform.translation.y = maximus.pos_Y;
-    
-        t.transform.rotation = tf::createQuaternionFromYaw(maximus.theta);
-        t.header.stamp = nh.now();
-    
-        broadcaster.sendTransform(t);
-        nh.spinOnce();
-    }
-    
-    // Set the speed to the maximum
-    delta_motor.max_speed = DELTA_MAX_SPEED;
-    alpha_motor.max_speed = ALPHA_MAX_SPEED;
-    
-    goal.x = maximus.pos_X;
-    goal.y = maximus.pos_Y;
-    
-    //alpha_and_theta = 1;
-    set_alpha_theta_mode();
-    */
-    /*
-    // go back to touch the wall
-    set_new_command(&bot_command_alpha, 0);
-    set_new_command(&bot_command_delta, -1000);
-    
-    while ((digitalRead(LEFT_REAR_SENSOR) == 1) || (digitalRead(RIGHT_REAR_SENSOR) == 1)) {
-        delay(100);
-    }
-    
-    delay(500);
-    
-    // Set the Y position and theta
-    my_robot->theta = 0;
-    my_robot->pos_Y = 0.000 + DISTANCE_REAR_WHEELS;
-    my_robot->pos_X = 0.0 + DISTANCE_REAR_WHEELS; 
-    
-    set_new_command(&bot_command_alpha, 0);
-    set_new_command(&bot_command_delta, 0);
-    
-    delay(300);
-    
-    set_new_command(&bot_command_delta, 0.100);
-    
-    delay(1000);
-    
-    // Set the speed to the maximum
-    delta_motor.max_speed = DELTA_MAX_SPEED;
-    alpha_motor.max_speed = ALPHA_MAX_SPEED;
-    
-    goal.x = maximus.pos_X;
-    goal.y = maximus.pos_Y;
-    
-    alpha_and_theta = 1;
-*/
     
 }
 
 void calibrate_x_min(struct robot *my_robot)
 {
+    std_msgs::Bool succeed;
     int i = 0;
-    // Put the robot in low speed mode
-    delta_motor.max_speed = 40000;
-    alpha_motor.max_speed = 50000;
-    // First : turn in the correct direction
-    set_new_command(&bot_command_alpha, 0);
-    set_new_command(&bot_command_delta, 0);
-    //alpha_and_theta = 0;
-    unset_alpha_theta_mode();
-    //x = msg.data - 1.0;
-    double angletodo = -maximus.theta;
-   
-    if (angletodo > PI)
-        angletodo = angletodo - 2 * PI;
-    if (angletodo < -PI)
-        angletodo = 2 * PI + angletodo;
-
-    set_new_command(&bot_command_alpha, angletodo * RAD2DEG );
     
-    
-    for(i = 0; (i < 50) && (fabs(0-maximus.theta)>0.035); i++) {
-        delay(50);
-        t.header.frame_id = odom;
-        t.child_frame_id = base_link;
-    
-        t.transform.translation.x = maximus.pos_X;
-        t.transform.translation.y = maximus.pos_Y;
-    
-        t.transform.rotation = tf::createQuaternionFromYaw(maximus.theta);
-        t.header.stamp = nh.now();
-    
-        broadcaster.sendTransform(t);
-        nh.spinOnce();
-    }
-    
-    // Go back
-    // Put the robot in low speed mode
-    delta_motor.max_speed = 40000;
-    alpha_motor.max_speed = 5000;
-    // go back to touch the wall
-    set_new_command(&bot_command_alpha, 0);
-    set_new_command(&bot_command_delta, -1000);
-    
-    while ((digitalRead(LEFT_REAR_SENSOR) == 1) || (digitalRead(RIGHT_REAR_SENSOR) == 1)) {
+    while ( (i < 50) && ((digitalRead(LEFT_REAR_SENSOR) == 1) || (digitalRead(RIGHT_REAR_SENSOR) == 1)) ) {
         delay(100);
         t.header.frame_id = odom;
         t.child_frame_id = base_link;
@@ -957,6 +835,7 @@ void calibrate_x_min(struct robot *my_robot)
     
         broadcaster.sendTransform(t);
         nh.spinOnce();
+        i++;
     }
     
     delay(300);
@@ -965,100 +844,26 @@ void calibrate_x_min(struct robot *my_robot)
     my_robot->theta = 0;
     //my_robot->pos_Y = 0.000 + DISTANCE_REAR_WHEELS;
     my_robot->pos_X = -1.500 + DISTANCE_REAR_WHEELS; 
-    
-    set_new_command(&bot_command_alpha, 0);
-    set_new_command(&bot_command_delta, 0);
-    
-    for(i = 0; i < 6; i++) {
-        delay(50);
-        t.header.frame_id = odom;
-        t.child_frame_id = base_link;
-    
-        t.transform.translation.x = maximus.pos_X;
-        t.transform.translation.y = maximus.pos_Y;
-    
-        t.transform.rotation = tf::createQuaternionFromYaw(maximus.theta);
-        t.header.stamp = nh.now();
-    
-        broadcaster.sendTransform(t);
-        nh.spinOnce();
+        
+    if(i>=50)
+    {
+      succeed.data = false;
     }
-    
-    set_new_command(&bot_command_delta, 0.250);
-    
-    for(i = 0; i < 60; i++) {
-        delay(50);
-        t.header.frame_id = odom;
-        t.child_frame_id = base_link;
-    
-        t.transform.translation.x = maximus.pos_X;
-        t.transform.translation.y = maximus.pos_Y;
-    
-        t.transform.rotation = tf::createQuaternionFromYaw(maximus.theta);
-        t.header.stamp = nh.now();
-    
-        broadcaster.sendTransform(t);
-        nh.spinOnce();
+    else
+    {
+      succeed.data = true;
     }
-    
-    // Set the speed to the maximum
-    delta_motor.max_speed = DELTA_MAX_SPEED;
-    alpha_motor.max_speed = ALPHA_MAX_SPEED;
-    
-    //goal.x = maximus.pos_X;
-    //goal.y = maximus.pos_Y;
-    
-    //alpha_and_theta = 1;
-    set_alpha_theta_mode();
-    
+    pub_calib_done.publish(&succeed);        
+        
+        
 }
 
 void calibrate_y_min(struct robot *my_robot)
 {
+    std_msgs::Bool succeed;
     int i = 0;
-    // Put the robot in low speed mode
-    delta_motor.max_speed = 4000;
-    alpha_motor.max_speed = 50000;
-    // First : turn in the correct direction
-    set_new_command(&bot_command_alpha, 0);
-    set_new_command(&bot_command_delta, 0);
-    //alpha_and_theta = 0;
-    unset_alpha_theta_mode();
-    //x = msg.data - 1.0;
-    double angletodo = (PI / 2)-maximus.theta;
-   
-    if (angletodo > PI)
-        angletodo = angletodo - 2 * PI;
-    if (angletodo < -PI)
-        angletodo = 2 * PI + angletodo;
-
-    set_new_command(&bot_command_alpha, angletodo * RAD2DEG );
     
-    
-    for(i = 0; (i < 50) && (fabs((PI / 2)-maximus.theta)>0.035); i++) {
-        delay(50);
-        t.header.frame_id = odom;
-        t.child_frame_id = base_link;
-    
-        t.transform.translation.x = maximus.pos_X;
-        t.transform.translation.y = maximus.pos_Y;
-    
-        t.transform.rotation = tf::createQuaternionFromYaw(maximus.theta);
-        t.header.stamp = nh.now();
-    
-        broadcaster.sendTransform(t);
-        nh.spinOnce();
-    }
-    
-    // Go back
-    // Put the robot in low speed mode
-    delta_motor.max_speed = 40000;
-    alpha_motor.max_speed = 5000;
-    // go back to touch the wall
-    set_new_command(&bot_command_alpha, 0);
-    set_new_command(&bot_command_delta, -1000);
-    
-    while ((digitalRead(LEFT_REAR_SENSOR) == 1) || (digitalRead(RIGHT_REAR_SENSOR) == 1)) {
+    while ( (i < 50) && ((digitalRead(LEFT_REAR_SENSOR) == 1) || (digitalRead(RIGHT_REAR_SENSOR) == 1)) ) {
         delay(100);
         t.header.frame_id = odom;
         t.child_frame_id = base_link;
@@ -1071,20 +876,36 @@ void calibrate_y_min(struct robot *my_robot)
     
         broadcaster.sendTransform(t);
         nh.spinOnce();
+        i++;
     }
     
     delay(300);
     
     // Set the Y position and theta
     my_robot->theta = 1.570796;
-    my_robot->pos_Y = 0.0 + DISTANCE_REAR_WHEELS;
-    //my_robot->pos_X = 0.0 + DISTANCE_REAR_WHEELS; 
+    my_robot->pos_Y = 0.000 + DISTANCE_REAR_WHEELS;
+    //my_robot->pos_X = -1.500 + DISTANCE_REAR_WHEELS; 
+        
+    if(i>=50)
+    {
+      succeed.data = false;
+    }
+    else
+    {
+      succeed.data = true;
+    }
+    pub_calib_done.publish(&succeed);        
+        
+        
+}
+
+void calibrate_x_max(struct robot *my_robot)
+{
+    std_msgs::Bool succeed;
+    int i = 0;
     
-    set_new_command(&bot_command_alpha, 0);
-    set_new_command(&bot_command_delta, 0);
-    
-    for(i = 0; i < 6; i++) {
-        delay(50);
+    while ( (i < 50) && ((digitalRead(LEFT_REAR_SENSOR) == 1) || (digitalRead(RIGHT_REAR_SENSOR) == 1)) ) {
+        delay(100);
         t.header.frame_id = odom;
         t.child_frame_id = base_link;
     
@@ -1096,12 +917,36 @@ void calibrate_y_min(struct robot *my_robot)
     
         broadcaster.sendTransform(t);
         nh.spinOnce();
+        i++;
     }
     
-    set_new_command(&bot_command_delta, 0.250);
+    delay(300);
     
-    for(i = 0; i < 60; i++) {
-        delay(50);
+    // Set the Y position and theta
+    my_robot->theta = 3.1415926;
+    //my_robot->pos_Y = 0.000 + DISTANCE_REAR_WHEELS;
+    my_robot->pos_X = 1.500 - DISTANCE_REAR_WHEELS; 
+        
+    if(i>=50)
+    {
+      succeed.data = false;
+    }
+    else
+    {
+      succeed.data = true;
+    }
+    pub_calib_done.publish(&succeed);        
+        
+        
+}
+
+void calibrate_y_max(struct robot *my_robot)
+{
+    std_msgs::Bool succeed;
+    int i = 0;
+    
+    while ( (i < 50) && ((digitalRead(LEFT_REAR_SENSOR) == 1) || (digitalRead(RIGHT_REAR_SENSOR) == 1)) ) {
+        delay(100);
         t.header.frame_id = odom;
         t.child_frame_id = base_link;
     
@@ -1113,102 +958,33 @@ void calibrate_y_min(struct robot *my_robot)
     
         broadcaster.sendTransform(t);
         nh.spinOnce();
+        i++;
     }
     
-    // Set the speed to the maximum
-    delta_motor.max_speed = DELTA_MAX_SPEED;
-    alpha_motor.max_speed = ALPHA_MAX_SPEED;
+    delay(300);
     
-    //goal.x = maximus.pos_X;
-    //goal.y = maximus.pos_Y;
-    
-    //alpha_and_theta = 1;
-    set_alpha_theta_mode();
-    
+    // Set the Y position and theta
+    my_robot->theta = -1.570796;
+    my_robot->pos_Y = 2.000 - DISTANCE_REAR_WHEELS;
+    //my_robot->pos_X = -1.500 + DISTANCE_REAR_WHEELS; 
+        
+    if(i>=50)
+    {
+      succeed.data = false;
+    }
+    else
+    {
+      succeed.data = true;
+    }
+    pub_calib_done.publish(&succeed);        
+        
+        
 }
 
 
 void init_first_position(struct robot *my_robot)
 {
-    // Put the robot in low speed mode
-    delta_motor.max_speed = 3000;
-    alpha_motor.max_speed = 2000;
-    // go back to touch the wall
-    set_new_command(&bot_command_alpha, 0);
-    set_new_command(&bot_command_delta, -1000);
-/*
-    while ((digitalRead(LEFT_REAR_SENSOR) == 0) || (digitalRead(RIGHT_REAR_SENSOR) == 0)) {
-        delay(100);
-
-    }
-    */
-    delay(2000);
-    // Set the Y position and theta
-    my_robot->theta = PI / 2;
-    my_robot->pos_Y = 0.000 + DISTANCE_REAR_WHEELS;
-    my_robot->pos_X = 0;
-
-    delay(100);
-    // Stop the motors
-    set_new_command(&bot_command_alpha, 0);
-    set_new_command(&bot_command_delta, 0);
-    delay(100);
-    // Go forward, turn, and go bachward to touch the other wall
-    set_new_command(&bot_command_delta, 0.400);
-    delay(6000);
-    set_new_command(&bot_command_alpha, (color * PI / 2 * RAD2DEG));
-    delay(5000);
-    set_new_command(&bot_command_delta, -1000);
-/*
-    while ((digitalRead(LEFT_REAR_SENSOR) == 0) || (digitalRead(RIGHT_REAR_SENSOR) == 0)) {
-        delay(100);
-
-    }
-    */
-    delay(4000);
-    // Set the X and theta values
-    my_robot->pos_X = color * (1.500 - DISTANCE_REAR_WHEELS);
-    if (color == 1) {
-        my_robot->theta = PI;
-    } else {
-        my_robot->theta = 0;
-    }
-
-    delay(100);
-
-    // Stop the motors
-    set_new_command(&bot_command_alpha, 0);
-    set_new_command(&bot_command_delta, 0);
-
-    delay(500);
-    // Go in the middle of the starting area
-    set_new_command(&bot_command_delta, 0.060);
-// FOR TEST
-//    set_new_command(&bot_command_delta, 2.5);
-
-//    delay(20000);
-
-    delay(4000);
-
-    set_new_command(&bot_command_alpha, (color * PI / 2 * RAD2DEG));
-    delay(5000);
-
-    set_new_command(&bot_command_delta, -1.090);
-    delay(12000);
-
-    //set_new_command(&bot_command_alpha, (-color * PI / 8 * RAD2DEG));
-    //delay(3000);
-    
-    //delay(4000);
-    // Set the speed to the maximum
-    delta_motor.max_speed = DELTA_MAX_SPEED;
-    alpha_motor.max_speed = ALPHA_MAX_SPEED;
-
-    //goal.x = maximus.pos_X;
-    //goal.y = maximus.pos_Y;
-
-    delay(100);
-
+ 
 }
 
 
@@ -1476,91 +1252,7 @@ void set_new_command(struct RobotCommand *cmd, double distance)
 long compute_position_PID(struct RobotCommand *cmd,
                           struct motor *used_motor)
 {
-    long P, I, D;
-    long errDif, err;
     long tmp = 0;
-
-    if (cmd->state == WAITING_BEGIN) {
-        cmd->state = PROCESSING_COMMAND;
-    }
-
-    if (used_motor->type == ALPHA_MOTOR)
-        err =
-            cmd->desired_distance * 10 -
-            cmd->current_distance * 10 * RAD2DEG;
-    else
-        err = cmd->desired_distance * 1000 - cmd->current_distance * 1000;      // put it in millimeter
-
-    used_motor->error_sum += err;       // Error sum
-    if (used_motor->error_sum > 10)
-        used_motor->error_sum = 10;
-    if (used_motor->error_sum < -10)
-        used_motor->error_sum = -10;
-
-    errDif = err - used_motor->last_error;      // Compute the error variation
-
-    used_motor->last_error = err;
-
-    P = err * used_motor->kP;   // Proportionnal
-    I = used_motor->error_sum * used_motor->kI; // Integral
-    D = errDif * used_motor->kD;        // Derivative
-
-    tmp = (P + I + D);
-
-    if (abs(tmp) < abs(used_motor->des_speed)) {        // Deceleration
-        if (tmp > (used_motor->des_speed + used_motor->decel))
-            tmp = (used_motor->des_speed + used_motor->decel);
-        else if (tmp < (used_motor->des_speed - used_motor->decel))
-            tmp = (used_motor->des_speed - used_motor->decel);
-    } else {                    // Acceleration
-        if (tmp > (used_motor->des_speed + used_motor->accel))
-            tmp = (used_motor->des_speed + used_motor->accel);
-        else if (tmp < (used_motor->des_speed - used_motor->accel))
-            tmp = (used_motor->des_speed - used_motor->accel);
-    }
-
-    if (tmp > (used_motor->max_speed))
-        tmp = (used_motor->max_speed);
-    if (tmp < -(used_motor->max_speed))
-        tmp = -(used_motor->max_speed);
-
-    if (used_motor->type == ALPHA_MOTOR) {
-//        if ((cmd->state == PROCESSING_COMMAND) && (abs(err) < 3)
-//            && (abs(errDif) < 3)) {                        // 2 before
-        if ((cmd->state == PROCESSING_COMMAND) && (abs(err) < 5)) {    // 2 before
-
-            cmd->state = COMMAND_DONE;
-        }
-    } else {
-//        if ((cmd->state == PROCESSING_COMMAND) && (abs(err) < 0.006)
-//            && (abs(errDif) < 0.005)) {                        // 2 before
-        if ((cmd->state == PROCESSING_COMMAND) && (abs(err) < 5)) {    // 2 before
-            cmd->state = COMMAND_DONE;
-            //pub_move_done.publish(&movement_done);
-        }
-    }
-
-    if(abs(err) > used_motor->min_error_zero)
-    {
-        if( (abs(tmp) < used_motor->min_speed) && (abs(tmp) > 2) )
-        {
-        if(tmp > 0)
-        {
-            //tmp = tmp + used_motor->min_speed;
-            tmp = used_motor->min_speed;
-        }
-        else
-        {
-            //tmp = tmp - used_motor->min_speed;
-            tmp = -used_motor->min_speed;
-        }
-        }
-    }
-    else
-    {
-        tmp = 0;
-    }
-
     return tmp;
 }
 
