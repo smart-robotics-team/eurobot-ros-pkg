@@ -7,6 +7,7 @@
 #include <tf/transform_broadcaster.h>
 #include <std_msgs/Int32.h>
 #include <std_msgs/Int8.h>
+#include <std_msgs/UInt16.h>
 #include <std_msgs/Float32.h>
 #include <std_msgs/Empty.h>
 #include <std_msgs/Bool.h>
@@ -313,17 +314,17 @@ void colorCb(const std_msgs::Int32 & msg)
 
 ros::Subscriber < std_msgs::Int32 > ros_color("color", &colorCb);
 
-void leftServoCb(const std_msgs::Int32 & msg)
+void leftServoCb(const std_msgs::UInt16 & msg)
 {
   left_servo.write(msg.data);
 }
-ros::Subscriber < std_msgs::Int32 > left_servo_ros("left_servo", &leftServoCb);
+ros::Subscriber < std_msgs::UInt16 > left_servo_ros("left_servo", &leftServoCb);
 
-void rightServoCb(const std_msgs::Int32 & msg)
+void rightServoCb(const std_msgs::UInt16 & msg)
 {
   right_servo.write(msg.data);
 }
-ros::Subscriber < std_msgs::Int32 > right_servo_ros("right_servo", &rightServoCb);
+ros::Subscriber < std_msgs::UInt16 > right_servo_ros("right_servo", &rightServoCb);
 
 void calibrateCb(const std_msgs::Int32 & msg)
 {
